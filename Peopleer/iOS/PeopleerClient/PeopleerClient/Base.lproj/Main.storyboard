@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PeopleerClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VnR-BH-8Z5">
+                                <rect key="frame" x="136" y="429" width="142" height="48"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
+                                <state key="normal" title="Go to Map">
+                                    <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="OpenMap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="X9e-m2-q1S"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.25120330829999998" green="0.64816376190000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="VnR-BH-8Z5" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="bWE-0A-S7y"/>
+                            <constraint firstItem="VnR-BH-8Z5" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="dJL-QA-lOb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="openMapBtn" destination="VnR-BH-8Z5" id="8hU-6b-Mz4"/>
+                        <segue destination="ah5-am-o46" kind="presentation" identifier="openMapSegue" id="Io5-Vm-L5P"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="137.68115942028987" y="109.82142857142857"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="y6C-S5-pn0">
+            <objects>
+                <viewController id="ah5-am-o46" customClass="MapViewController" customModule="PeopleerClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NdX-aJ-A8D">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OnB-VW-Qwt">
+                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="808" id="1M4-Hb-L5g"/>
+                                </constraints>
+                            </mapView>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iib-kL-aOh">
+                                <rect key="frame" x="0.0" y="35" width="414" height="44"/>
+                            </navigationBar>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DU5-bC-VQ5">
+                                <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                                <items>
+                                    <navigationItem title="Map View" id="vUz-49-y2B">
+                                        <barButtonItem key="leftBarButtonItem" title="Back" style="done" id="lP1-Jb-VN6">
+                                            <color key="tintColor" red="0.13063616159999999" green="0.63799847119999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <connections>
+                                                <segue destination="BYZ-38-t0r" kind="showDetail" id="PDJ-l0-rCx"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Refresh" style="done" id="B3Q-Ye-atz">
+                                            <connections>
+                                                <action selector="RefreshMap:" destination="ah5-am-o46" id="GWv-Rb-eTS"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="OnB-VW-Qwt" firstAttribute="top" secondItem="Iib-kL-aOh" secondAttribute="bottom" constant="9" id="1Ol-GF-lOu"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="centerX" secondItem="DEJ-JW-4y5" secondAttribute="centerX" id="35Y-9Q-RzZ"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="trailing" secondItem="Iib-kL-aOh" secondAttribute="trailing" id="HYT-U3-dLx"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="leading" secondItem="OnB-VW-Qwt" secondAttribute="leading" id="P3n-CT-s4T"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="leading" secondItem="Iib-kL-aOh" secondAttribute="leading" id="QBe-UG-oAF"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="centerX" secondItem="DEJ-JW-4y5" secondAttribute="centerX" id="XUN-Ta-LdK"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="top" secondItem="DEJ-JW-4y5" secondAttribute="top" id="a22-Xk-zNi"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="trailing" secondItem="OnB-VW-Qwt" secondAttribute="trailing" id="kI3-Dk-m5t"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="bottom" secondItem="OnB-VW-Qwt" secondAttribute="top" id="pfr-a8-18k"/>
+                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="leading" secondItem="NdX-aJ-A8D" secondAttribute="leading" id="ts0-Mz-eeR"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="DEJ-JW-4y5"/>
+                    </view>
+                    <connections>
+                        <outlet property="mapView" destination="OnB-VW-Qwt" id="YeO-UH-To3"/>
+                        <outlet property="refreshButton" destination="B3Q-Ye-atz" id="D8W-uZ-7Dy"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pUD-kv-dgq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="911.59420289855075" y="-601.33928571428567"/>
+        </scene>
+    </scenes>
+</document>
