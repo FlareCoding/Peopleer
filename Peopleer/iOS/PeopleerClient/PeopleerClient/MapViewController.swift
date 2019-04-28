@@ -20,10 +20,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        RemoveAllAnnotations()
+        
+        EventDataManager.RefreshEventData()
+        sleep(2)
+        
         mapView.delegate = self
         
         createLocationManager()
-        createMapAnnotations(locations: EventDataManager.event_locations)
+        createMapAnnotations(events: EventDataManager.events)
         
         if locationManager.location != nil {
             setMapZoomLevel(location: locationManager.location!)
@@ -46,21 +52,27 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         mapView.setRegion(mapCoordinates, animated: true)
     }
     
-    func createMapAnnotations(locations: [[String : Any]]) {
-        for location in locations {
-            if location["type"] as? String == "event" {
+    func createMapAnnotations(events: [Event]) {
+        for event in events {
+            if event.type == "event" {
                 let annotation = MKPointAnnotation()
-                annotation.title = location["title"] as? String
-                annotation.coordinate = CLLocationCoordinate2D(latitude: location["latitude"] as! CLLocationDegrees,
-                                                               longitude: location["longitude"] as! CLLocationDegrees)
+                annotation.title = event.title
+                annotation.coordinate = CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)
                 mapView.addAnnotation(annotation)
             }
         }
     }
     
+    func RemoveAllAnnotations() {
+        let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
+        mapView.removeAnnotations( annotationsToRemove )
+    }
     
     @IBAction func RefreshMap(_ sender: UIBarButtonItem) {
+        RemoveAllAnnotations()
         EventDataManager.RefreshEventData()
+        sleep(2)
+        createMapAnnotations(events: EventDataManager.events)
     }
 }
 

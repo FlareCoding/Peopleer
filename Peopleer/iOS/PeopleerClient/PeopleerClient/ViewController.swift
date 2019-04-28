@@ -14,8 +14,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        EventDataManager.RefreshEventData()
     }
 
     @IBAction func OpenMap(_ sender: UIButton) {
