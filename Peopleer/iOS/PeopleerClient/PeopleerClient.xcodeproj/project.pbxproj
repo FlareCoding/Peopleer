@@ -15,6 +15,8 @@
 		6C3AD038226D4C9200CA8413 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C3AD036226D4C9200CA8413 /* LaunchScreen.storyboard */; };
 		6C6D1D0722723D010099BA2E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6D1D0622723D010099BA2E /* MapViewController.swift */; };
 		6C6D1D0922725B690099BA2E /* EventDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6D1D0822725B690099BA2E /* EventDataManager.swift */; };
+		6C7F9E3622779B1500325215 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F9E3522779B1500325215 /* NetworkManager.swift */; };
+		6C7F9E382277AD4D00325215 /* UIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F9E372277AD4D00325215 /* UIUtils.swift */; };
 		6CCE5E2D226E24B8009B76AB /* LaunchScreenController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6CCE5E2B226E24B8009B76AB /* LaunchScreenController.storyboard */; };
 		6CCE5E2F226E24E2009B76AB /* LaunchScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */; };
 /* End PBXBuildFile section */
@@ -30,6 +32,8 @@
 		6C3AD039226D4C9300CA8413 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6C6D1D0622723D010099BA2E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		6C6D1D0822725B690099BA2E /* EventDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDataManager.swift; sourceTree = "<group>"; };
+		6C7F9E3522779B1500325215 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		6C7F9E372277AD4D00325215 /* UIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIUtils.swift; sourceTree = "<group>"; };
 		6CCE5E2C226E24B8009B76AB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = PeopleerClient/Base.lproj/LaunchScreenController.storyboard; sourceTree = "<group>"; };
 		6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -74,7 +78,9 @@
 				6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */,
 				6C3AD039226D4C9300CA8413 /* Info.plist */,
 				6C3AD031226D4C9100CA8413 /* PeopleerClient.xcdatamodeld */,
+				6C7F9E372277AD4D00325215 /* UIUtils.swift */,
 				6C6D1D0822725B690099BA2E /* EventDataManager.swift */,
+				6C7F9E3522779B1500325215 /* NetworkManager.swift */,
 			);
 			path = PeopleerClient;
 			sourceTree = "<group>";
@@ -155,9 +161,11 @@
 				6C3AD02D226D4C9100CA8413 /* ViewController.swift in Sources */,
 				6C3AD02B226D4C9100CA8413 /* AppDelegate.swift in Sources */,
 				6CCE5E2F226E24E2009B76AB /* LaunchScreenController.swift in Sources */,
+				6C7F9E3622779B1500325215 /* NetworkManager.swift in Sources */,
 				6C6D1D0722723D010099BA2E /* MapViewController.swift in Sources */,
 				6C6D1D0922725B690099BA2E /* EventDataManager.swift in Sources */,
 				6C3AD033226D4C9100CA8413 /* PeopleerClient.xcdatamodeld in Sources */,
+				6C7F9E382277AD4D00325215 /* UIUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

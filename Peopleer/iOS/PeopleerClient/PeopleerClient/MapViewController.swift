@@ -20,16 +20,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         RemoveAllAnnotations()
         
-        EventDataManager.RefreshEventData()
-        sleep(2)
+        EventDataManager.shared.RefreshEventData(view: self) { events in
+            self.createMapAnnotations(events: EventDataManager.shared.events)
+        }
         
         mapView.delegate = self
-        
         createLocationManager()
-        createMapAnnotations(events: EventDataManager.events)
         
         if locationManager.location != nil {
             setMapZoomLevel(location: locationManager.location!)
@@ -69,10 +67,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @IBAction func RefreshMap(_ sender: UIBarButtonItem) {
+        sender.isEnabled = false
         RemoveAllAnnotations()
-        EventDataManager.RefreshEventData()
-        sleep(2)
-        createMapAnnotations(events: EventDataManager.events)
+        
+        EventDataManager.shared.RefreshEventData(view: self) { events in
+            self.createMapAnnotations(events: EventDataManager.shared.events)
+            sender.isEnabled = true
+        }
+    }
+    
+    @IBAction func MapLongPressGesture(_ sender: UILongPressGestureRecognizer) {
+        if sender.state == UIGestureRecognizer.State.began {
+            print("UILongGestureRecognizer Activated")
+            performSegue(withIdentifier: "CreateEventSegue", sender: nil)
+        }
     }
 }
 

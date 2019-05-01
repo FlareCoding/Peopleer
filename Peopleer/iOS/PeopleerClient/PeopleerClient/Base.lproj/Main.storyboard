@@ -29,7 +29,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="0.25120330829999998" green="0.64816376190000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.53977467270000001" green="0.33645975649999998" blue="0.86423251300000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="VnR-BH-8Z5" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="bWE-0A-S7y"/>
                             <constraint firstItem="VnR-BH-8Z5" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="dJL-QA-lOb"/>
@@ -55,13 +55,14 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OnB-VW-Qwt">
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="808" id="1M4-Hb-L5g"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="sbJ-kf-AiN" appends="YES" id="rLR-qL-bpA"/>
+                                </connections>
                             </mapView>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iib-kL-aOh">
-                                <rect key="frame" x="0.0" y="35" width="414" height="44"/>
-                            </navigationBar>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DU5-bC-VQ5">
                                 <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                                 <items>
@@ -83,11 +84,8 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="OnB-VW-Qwt" firstAttribute="top" secondItem="Iib-kL-aOh" secondAttribute="bottom" constant="9" id="1Ol-GF-lOu"/>
                             <constraint firstItem="DU5-bC-VQ5" firstAttribute="centerX" secondItem="DEJ-JW-4y5" secondAttribute="centerX" id="35Y-9Q-RzZ"/>
-                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="trailing" secondItem="Iib-kL-aOh" secondAttribute="trailing" id="HYT-U3-dLx"/>
                             <constraint firstItem="DU5-bC-VQ5" firstAttribute="leading" secondItem="OnB-VW-Qwt" secondAttribute="leading" id="P3n-CT-s4T"/>
-                            <constraint firstItem="DU5-bC-VQ5" firstAttribute="leading" secondItem="Iib-kL-aOh" secondAttribute="leading" id="QBe-UG-oAF"/>
                             <constraint firstItem="DU5-bC-VQ5" firstAttribute="centerX" secondItem="DEJ-JW-4y5" secondAttribute="centerX" id="XUN-Ta-LdK"/>
                             <constraint firstItem="DU5-bC-VQ5" firstAttribute="top" secondItem="DEJ-JW-4y5" secondAttribute="top" id="a22-Xk-zNi"/>
                             <constraint firstItem="DU5-bC-VQ5" firstAttribute="trailing" secondItem="OnB-VW-Qwt" secondAttribute="trailing" id="kI3-Dk-m5t"/>
@@ -99,11 +97,81 @@
                     <connections>
                         <outlet property="mapView" destination="OnB-VW-Qwt" id="YeO-UH-To3"/>
                         <outlet property="refreshButton" destination="B3Q-Ye-atz" id="D8W-uZ-7Dy"/>
+                        <segue destination="HRE-9g-zzt" kind="show" identifier="CreateEventSegue" id="l5B-Np-NQc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pUD-kv-dgq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="sbJ-kf-AiN">
+                    <connections>
+                        <action selector="MapLongPressGesture:" destination="ah5-am-o46" id="4w0-Ou-Qbn"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="911.59420289855075" y="-601.33928571428567"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="MZI-EK-CTq">
+            <objects>
+                <viewController id="HRE-9g-zzt" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cQv-D7-nIu">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="1000"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yqm-XL-JLO">
+                                <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                                <items>
+                                    <navigationItem title="Event Editor" id="kdl-e1-Aqg">
+                                        <barButtonItem key="leftBarButtonItem" title="Return" style="done" id="jDv-94-ApZ">
+                                            <color key="tintColor" red="0.13063616159999999" green="0.63799847119999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <connections>
+                                                <segue destination="ah5-am-o46" kind="show" id="8gB-aP-aaf"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lck-wM-I6O">
+                                <rect key="frame" x="0.0" y="88" width="414" height="1000"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p98-lC-15y">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1000"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="1000" id="X18-SC-2Bj"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="p98-lC-15y" firstAttribute="leading" secondItem="lck-wM-I6O" secondAttribute="leading" id="8FT-YA-qcd"/>
+                                    <constraint firstAttribute="trailing" secondItem="p98-lC-15y" secondAttribute="trailing" id="Ddo-eu-LBk"/>
+                                    <constraint firstItem="p98-lC-15y" firstAttribute="top" secondItem="lck-wM-I6O" secondAttribute="top" id="Zw5-jJ-t6t"/>
+                                    <constraint firstAttribute="bottom" secondItem="p98-lC-15y" secondAttribute="bottom" id="gyU-Cw-CIt"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Yqm-XL-JLO" firstAttribute="leading" secondItem="fvM-ei-x4R" secondAttribute="leading" id="3a2-HQ-Cax"/>
+                            <constraint firstItem="lck-wM-I6O" firstAttribute="leading" secondItem="fvM-ei-x4R" secondAttribute="leading" id="R1F-1k-cGx"/>
+                            <constraint firstItem="Yqm-XL-JLO" firstAttribute="trailing" secondItem="fvM-ei-x4R" secondAttribute="trailing" id="R7M-6L-lfz"/>
+                            <constraint firstItem="p98-lC-15y" firstAttribute="width" secondItem="cQv-D7-nIu" secondAttribute="width" id="c2U-eh-LTx"/>
+                            <constraint firstAttribute="bottom" secondItem="lck-wM-I6O" secondAttribute="bottom" constant="-88" id="caE-iz-XjW"/>
+                            <constraint firstItem="Yqm-XL-JLO" firstAttribute="top" secondItem="fvM-ei-x4R" secondAttribute="top" id="fdf-uk-8Wv"/>
+                            <constraint firstItem="lck-wM-I6O" firstAttribute="width" secondItem="cQv-D7-nIu" secondAttribute="width" id="kyX-KA-AM8"/>
+                            <constraint firstItem="lck-wM-I6O" firstAttribute="top" secondItem="Yqm-XL-JLO" secondAttribute="bottom" id="ofN-U9-PYo"/>
+                            <constraint firstItem="lck-wM-I6O" firstAttribute="trailing" secondItem="fvM-ei-x4R" secondAttribute="trailing" id="wFA-fY-NLY"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="fvM-ei-x4R"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="puf-22-v0l"/>
+                    <size key="freeformSize" width="414" height="1000"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Km9-WD-NsU" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1982.608695652174" y="-567.1875"/>
+        </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="8gB-aP-aaf"/>
+    </inferredMetricsTieBreakers>
 </document>

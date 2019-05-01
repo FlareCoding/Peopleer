@@ -7,17 +7,18 @@
 //
 
 import Foundation
+import UIKit
 
 struct Event {
     var type        : String
     var title       : String
     var latitude    : Double
-    var longitude  : Double
+    var longitude   : Double
 }
 
 class EventDataManager {
     
-    static var events: [Event] = []
+    var events: [Event] = []
     //[
         //["type": "event", "title": "Peopleer Headquarters", "latitude": 40.711017, "longitude": -74.016937],
         //["type": "event", "title": "Test Event 1", "latitude": 40.701983, "longitude": -74.014356],
@@ -25,62 +26,56 @@ class EventDataManager {
         //["type": "event", "title": "Test Event 3", "latitude": 40.692753, "longitude": -73.976649]
     //]
     
-    private static let TARGET_URL = "http://192.168.0.11:8000/events.json";
+    private let TARGET_URL = "http://158.222.244.80:8000/events.json";
     
-    static func RefreshEventData() {
-        /*
-         let request = URLRequest(url: URL(string: TARGET_URL)!)
-         let task = URLSession.shared.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
-         if let data = data {
-         do {
-         let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-         let events = json["Events"] as! [[String : Any]]
-         self.events = [] // resetting all events
-         print("EVENT COUNT: \(String(describing: events.count))")
-         for event in events {
-         RegisterNewEvent(event: event)
-         }
-         } catch {
-         print(error.localizedDescription)
-         }
-         }
-         }
-         task.resume()
-         */
+    func RefreshEventData(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
+        self.events = [] // removing all existing events
         
-        guard let url = URL(string: TARGET_URL) else {
-            print("Invalid URL")
-            return
-        }
-        
-        let session = URLSession.shared
-        session.invalidateAndCancel()
-        session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) in
-            if response != nil {
-                if let data = data {
-                    do {
-                        let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-                        let events = json["Events"] as! [[String : Any]]
-                        self.events = [] // resetting all events
-                        print("EVENT COUNT: \(String(describing: events.count))")
-                        for event in events {
-                            RegisterNewEvent(event: event)
-                        }
-                    } catch {
-                        print(error.localizedDescription)
+        NetworkManager.shared.getRequest(url: TARGET_URL) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured when conneting to server")
                     }
+                    completionHandler(self.events)
+                    return
                 }
-            } else {
-                print("Failed to connect with the server  | Error: \(String(describing: error))")
+                
+                guard data != nil else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "Data Error", message: "No data was recieved from the server")
+                    }
+                    completionHandler(self.events)
+                    return
+                }
+                
+                guard let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: Any] else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "JSON Error", message: "Data recieved was corrupt")
+                    }
+                    completionHandler(self.events)
+                    return
+                }
+                
+                let events = json["Events"] as! [[String : Any]]
+                print("EVENT COUNT: \(String(describing: events.count))")
+                
+                for event in events {
+                    self.RegisterNewEvent(event: event)
+                }
+                
+                completionHandler(self.events)
             }
-        }.resume()
+        }
     }
     
-    private static func RegisterNewEvent(event: [String : Any]) {
+    private func RegisterNewEvent(event: [String : Any]) {
         let evt = Event(type: event["type"] as! String,
                         title: event["title"] as! String,
                         latitude: event["latitude"] as! Double,
                         longitude: event["longitude"] as! Double)
         events.append(evt)
     }
+    
+    static let shared = EventDataManager()
 }
