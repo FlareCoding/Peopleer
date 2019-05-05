@@ -28,4 +28,16 @@ class NetworkManager {
         }
         dataTask.resume()
     }
+    
+    func postRequest(url: String, postMsg: String, completionHandler: @escaping (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void) {
+        let _urlo = URL(string: url)!
+        var request = URLRequest(url: _urlo)
+        request.httpMethod = "POST"
+        request.httpBody = postMsg.data(using: String.Encoding.utf8)
+        
+        let dataTask = session.dataTask(with: request) { data, response, error in
+            completionHandler(data, response, error)
+        }
+        dataTask.resume()
+    }
 }

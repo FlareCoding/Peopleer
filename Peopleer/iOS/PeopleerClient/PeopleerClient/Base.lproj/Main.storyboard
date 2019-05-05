@@ -97,7 +97,7 @@
                     <connections>
                         <outlet property="mapView" destination="OnB-VW-Qwt" id="YeO-UH-To3"/>
                         <outlet property="refreshButton" destination="B3Q-Ye-atz" id="D8W-uZ-7Dy"/>
-                        <segue destination="HRE-9g-zzt" kind="show" identifier="CreateEventSegue" id="l5B-Np-NQc"/>
+                        <segue destination="HRE-9g-zzt" kind="show" identifier="EditEventSegue" id="l5B-Np-NQc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pUD-kv-dgq" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -109,10 +109,10 @@
             </objects>
             <point key="canvasLocation" x="911.59420289855075" y="-601.33928571428567"/>
         </scene>
-        <!--View Controller-->
+        <!--Event Editor View Controller-->
         <scene sceneID="MZI-EK-CTq">
             <objects>
-                <viewController id="HRE-9g-zzt" sceneMemberID="viewController">
+                <viewController id="HRE-9g-zzt" customClass="EventEditorViewController" customModule="PeopleerClient" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cQv-D7-nIu">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="1000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -124,7 +124,7 @@
                                         <barButtonItem key="leftBarButtonItem" title="Return" style="done" id="jDv-94-ApZ">
                                             <color key="tintColor" red="0.13063616159999999" green="0.63799847119999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
-                                                <segue destination="ah5-am-o46" kind="show" id="8gB-aP-aaf"/>
+                                                <segue destination="ah5-am-o46" kind="show" identifier="ReturnToMapKitFromEventEditorSegue" id="8gB-aP-aaf"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -135,9 +135,80 @@
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p98-lC-15y">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="1000"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Latitude" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nYJ-xc-ASb">
+                                                <rect key="frame" x="160.5" y="150" width="93" height="33"/>
+                                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="28"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Longitude" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ajV-jH-wDc">
+                                                <rect key="frame" x="150.5" y="249" width="113" height="33"/>
+                                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="28"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Koe-KK-J3N">
+                                                <rect key="frame" x="104" y="190" width="206" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="206" id="H1a-QH-w82"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8pt-9A-H07">
+                                                <rect key="frame" x="104" y="290" width="206" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BLe-Z9-is7">
+                                                <rect key="frame" x="36" y="97" width="343" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="343" id="KYP-Za-20S"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jxE-XE-BNN">
+                                                <rect key="frame" x="126" y="437" width="162" height="45"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
+                                                <state key="normal" title="Create Event">
+                                                    <color key="titleColor" red="0.53977467270000001" green="0.33645975649999998" blue="0.86423251300000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="CreateEvent:" destination="HRE-9g-zzt" eventType="touchUpInside" id="JSW-Zw-EqE"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WjD-uu-hT6">
+                                                <rect key="frame" x="181.5" y="56" width="52" height="33"/>
+                                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="28"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.85302767233931764" green="0.86215495282649068" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
+                                            <constraint firstItem="WjD-uu-hT6" firstAttribute="centerX" secondItem="BLe-Z9-is7" secondAttribute="centerX" id="6gk-bu-RiD"/>
+                                            <constraint firstItem="BLe-Z9-is7" firstAttribute="top" secondItem="WjD-uu-hT6" secondAttribute="bottom" constant="8" id="EhE-1x-fRj"/>
+                                            <constraint firstItem="ajV-jH-wDc" firstAttribute="top" secondItem="p98-lC-15y" secondAttribute="top" constant="249" id="Hrj-0g-JIa"/>
+                                            <constraint firstItem="8pt-9A-H07" firstAttribute="top" secondItem="p98-lC-15y" secondAttribute="top" constant="290" id="IrW-IQ-uvQ"/>
+                                            <constraint firstItem="Koe-KK-J3N" firstAttribute="leading" secondItem="8pt-9A-H07" secondAttribute="leading" id="JVE-hm-8g8"/>
                                             <constraint firstAttribute="height" constant="1000" id="X18-SC-2Bj"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="BLe-Z9-is7" secondAttribute="trailing" constant="27" id="ZC0-Oo-HbG"/>
+                                            <constraint firstItem="Koe-KK-J3N" firstAttribute="centerX" secondItem="nYJ-xc-ASb" secondAttribute="centerX" id="ZP9-mo-j6Z"/>
+                                            <constraint firstItem="jxE-XE-BNN" firstAttribute="centerX" secondItem="p98-lC-15y" secondAttribute="centerX" id="Zuw-uj-GE8"/>
+                                            <constraint firstItem="ajV-jH-wDc" firstAttribute="centerX" secondItem="p98-lC-15y" secondAttribute="centerX" id="dIt-8m-Ng5"/>
+                                            <constraint firstItem="nYJ-xc-ASb" firstAttribute="top" secondItem="p98-lC-15y" secondAttribute="top" constant="150" id="equ-wI-GgG"/>
+                                            <constraint firstItem="Koe-KK-J3N" firstAttribute="top" secondItem="p98-lC-15y" secondAttribute="top" constant="190" id="erX-CS-x0F"/>
+                                            <constraint firstItem="WjD-uu-hT6" firstAttribute="top" secondItem="p98-lC-15y" secondAttribute="top" constant="56" id="hr4-FP-Eq0"/>
+                                            <constraint firstItem="nYJ-xc-ASb" firstAttribute="centerX" secondItem="p98-lC-15y" secondAttribute="centerX" id="mts-oR-OQY"/>
+                                            <constraint firstItem="jxE-XE-BNN" firstAttribute="top" secondItem="8pt-9A-H07" secondAttribute="bottom" constant="117" id="nU3-hA-n47"/>
+                                            <constraint firstItem="BLe-Z9-is7" firstAttribute="leading" secondItem="p98-lC-15y" secondAttribute="leadingMargin" constant="28" id="pEU-6v-V0L"/>
+                                            <constraint firstItem="Koe-KK-J3N" firstAttribute="trailing" secondItem="8pt-9A-H07" secondAttribute="trailing" id="qsp-bJ-qvV"/>
+                                            <constraint firstItem="8pt-9A-H07" firstAttribute="centerX" secondItem="p98-lC-15y" secondAttribute="centerX" id="uJM-Tv-QPE"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -165,6 +236,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="puf-22-v0l"/>
                     <size key="freeformSize" width="414" height="1000"/>
+                    <connections>
+                        <outlet property="latitudeTextfield" destination="Koe-KK-J3N" id="6PR-GW-6Ek"/>
+                        <outlet property="longitudeTextfield" destination="8pt-9A-H07" id="xm8-yL-z5J"/>
+                        <outlet property="titleTextfield" destination="BLe-Z9-is7" id="OFg-jJ-c3v"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Km9-WD-NsU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

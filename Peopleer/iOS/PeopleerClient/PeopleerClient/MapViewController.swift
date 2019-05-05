@@ -18,11 +18,25 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     var locationManager: CLLocationManager!
     let distanceSpan = 50000
     
+    var viewLoadedAlertTitle: String? = nil
+    var viewLoadedAlertMsg: String? = nil
+    
+    private var selectedEvent = Event()
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if viewLoadedAlertMsg != nil && viewLoadedAlertTitle != nil {
+            let topVC = UIUtils.currentTopViewController()
+            UIUtils.showAlert(view: topVC, title: viewLoadedAlertTitle!, message: viewLoadedAlertMsg!)
+            viewLoadedAlertTitle = nil
+            viewLoadedAlertMsg = nil
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         RemoveAllAnnotations()
         
-        EventDataManager.shared.RefreshEventData(view: self) { events in
+        EventDataManager.shared.RetrieveEvents(view: self) { events in
             self.createMapAnnotations(events: EventDataManager.shared.events)
         }
         
@@ -52,12 +66,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func createMapAnnotations(events: [Event]) {
         for event in events {
-            if event.type == "event" {
-                let annotation = MKPointAnnotation()
-                annotation.title = event.title
-                annotation.coordinate = CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)
-                mapView.addAnnotation(annotation)
-            }
+            let annotation = MKPointAnnotation()
+            annotation.title = event.title
+            annotation.coordinate = CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)
+            mapView.addAnnotation(annotation)
         }
     }
     
@@ -70,7 +82,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         sender.isEnabled = false
         RemoveAllAnnotations()
         
-        EventDataManager.shared.RefreshEventData(view: self) { events in
+        EventDataManager.shared.RetrieveEvents(view: self) { events in
             self.createMapAnnotations(events: EventDataManager.shared.events)
             sender.isEnabled = true
         }
@@ -78,9 +90,24 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     @IBAction func MapLongPressGesture(_ sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizer.State.began {
-            print("UILongGestureRecognizer Activated")
-            performSegue(withIdentifier: "CreateEventSegue", sender: nil)
+            let point = sender.location(in: mapView)
+            let tapPoint = mapView.convert(point, toCoordinateFrom: view)
+            
+            selectedEvent.latitude = tapPoint.latitude
+            selectedEvent.longitude = tapPoint.longitude
+            
+            performSegue(withIdentifier: "EditEventSegue", sender: nil)
         }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let eventEditorViewController = segue.destination as? EventEditorViewController else { return }
+        
+        eventEditorViewController.event = Event()
+        
+        eventEditorViewController.event.title = selectedEvent.title
+        eventEditorViewController.event.latitude = selectedEvent.latitude
+        eventEditorViewController.event.longitude = selectedEvent.longitude
     }
 }
 
@@ -102,7 +129,18 @@ extension MapViewController : MKMapViewDelegate {
         }
         
         annotationView?.canShowCallout = true
+        annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         return annotationView
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        selectedEvent.title = (view.annotation?.title!)!
+        EventDataManager.shared.GetSpecificEvent(event_title: selectedEvent.title, view: self) { event in
+            if event != nil {
+                self.selectedEvent = event!
+                self.performSegue(withIdentifier: "EditEventSegue", sender: nil)
+            }
+        }
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {

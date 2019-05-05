@@ -16,4 +16,12 @@ class UIUtils {
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.default, handler: nil))
         view.present(alert, animated: true, completion: nil)
     }
+    
+    static func currentTopViewController() -> UIViewController {
+        var topVC: UIViewController? = UIApplication.shared.delegate?.window?!.rootViewController
+        while ((topVC?.presentedViewController) != nil) {
+            topVC = topVC?.presentedViewController
+        }
+        return topVC!
+    }
 }
