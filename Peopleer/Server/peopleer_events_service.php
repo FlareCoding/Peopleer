@@ -11,6 +11,10 @@ if ($service_request == "get_all_events") {
     insert_event($connection);
 } else if ($service_request == "get_specific_event") {
     get_specific_event($connection);
+} else if ($service_request == "delete_event") {
+    delete_event($connection);
+} else if ($service_request == "modify_event") {
+    modify_event($connection);
 }
 
 close_db_connection($connection);

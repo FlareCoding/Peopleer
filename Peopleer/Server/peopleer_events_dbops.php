@@ -13,8 +13,22 @@ function connect_to_db() {
     return $conn;
 }
 
-function close_db_connection($conn) {
-    mysqli_close($conn);
+function close_db_connection($connection) {
+    mysqli_close($connection);
+}
+
+function perform_query($connection, $query) {
+    $result = Array();
+
+    if (mysqli_query($connection, $query)) {
+        $result = Array("status" => "success");
+    } else {
+        $err = mysqli_error($connection);
+        error_log(print_r("[-] Error: " . $query . "   " . $err, true));
+        $result = Array("status" => "error", "error" => $err);
+    }
+
+    return $result;
 }
 
 function insert_event($connection) {
@@ -23,16 +37,7 @@ function insert_event($connection) {
     $longitude   = $_POST['long'];
 
     $sql = "INSERT INTO events (title, latitude, longitude) VALUES ('$event_title', '$latitude', '$longitude')";
-    $result = Array();
-
-    if (mysqli_query($connection, $sql)) {
-        error_log(print_r("[+] New event successfully added to the database [+]", true));
-        $result = Array("status" => "success");
-    } else {
-        $err = mysqli_error($connection);
-        error_log(print_r("[-] Error: " . $sql . "   " . $err, true));
-        $result = Array("status" => "error", "error" => $err);
-    }
+    $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");
     echo json_encode($result);
@@ -75,6 +80,28 @@ function get_specific_event($connection) {
 
     header("Content-Type: application/json");
     echo json_encode($json_result);
+}
+
+function delete_event($connection) {
+    $event_title = $_POST['event_title'];
+
+    $sql = "DELETE FROM events WHERE title='$event_title'";
+    $result = perform_query($connection, $sql);
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
+}
+
+function modify_event($connection) {
+    $event_title = $_POST['event_title'];
+    $latitude    = $_POST['lat'];
+    $longitude   = $_POST['long'];
+
+    $sql = "UPDATE events SET latitude='$latitude', longitude='$longitude' WHERE title='$event_title'";
+    $result = perform_query($connection, $sql);
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
 }
 
 ?>
