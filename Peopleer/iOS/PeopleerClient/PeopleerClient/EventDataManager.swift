@@ -25,6 +25,8 @@ class EventDataManager {
         static let GetAllEvents         = "get_all_events"
         static let InsertEvent          = "insert_event"
         static let GetSpecificEvent     = "get_specific_event"
+        static let DeleteEvent          = "delete_event"
+        static let ModifyEvent          = "modify_event"
     }
     
     private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
@@ -168,10 +170,120 @@ class EventDataManager {
                             return
                     }
                     
+                    if server_response.count < 1 {
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Error", message: "Could not load event data")
+                        }
+                        completionHandler(result_evt)
+                        return
+                    }
+                    
                     let event_data = server_response[0]
                     result_evt = self.ParseEventData(event: event_data)
                     
                     completionHandler(result_evt)
+                }
+            }
+        }
+    }
+    
+    func DeleteEvent(event_title: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+        
+        var postMsg = "servreq=\(EventServiceRequests.DeleteEvent)&event_title=\(event_title)"
+        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    let statusCode = HTTPResponse.statusCode
+                    if statusCode != 200 {
+                        // error occured
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    guard data != nil else {
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
+                        [String : String] else {
+                            if view != nil {
+                                UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                            }
+                            completionHandler(false)
+                            return
+                    }
+                    
+                    if server_response["status"] == "error" {
+                        if view != nil {
+                            let err = server_response["error"]!
+                            let errorMsg = "Error: \(String(describing: err))"
+                            UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    completionHandler(true)
+                }
+            }
+        }
+    }
+    
+    func ModifyEvent(event_title: String, view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+        
+        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)"
+        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    let statusCode = HTTPResponse.statusCode
+                    if statusCode != 200 {
+                        // error occured
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    guard data != nil else {
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
+                        [String : String] else {
+                            if view != nil {
+                                UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                            }
+                            completionHandler(false)
+                            return
+                    }
+                    
+                    if server_response["status"] == "error" {
+                        if view != nil {
+                            let err = server_response["error"]!
+                            let errorMsg = "Error: \(String(describing: err))"
+                            UIUtils.showAlert(view: view!, title: "Failed to Modify Event", message: errorMsg)
+                        }
+                        completionHandler(false)
+                        return
+                    }
+                    
+                    completionHandler(true)
                 }
             }
         }

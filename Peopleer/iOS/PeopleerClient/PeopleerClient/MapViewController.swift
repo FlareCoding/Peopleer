@@ -22,6 +22,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     var viewLoadedAlertMsg: String? = nil
     
     private var selectedEvent = Event()
+    var eventEditorStartupMode = EventEditingMode.CreateEvent
     
     override func viewDidAppear(_ animated: Bool) {
         if viewLoadedAlertMsg != nil && viewLoadedAlertTitle != nil {
@@ -95,6 +96,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             
             selectedEvent.latitude = tapPoint.latitude
             selectedEvent.longitude = tapPoint.longitude
+            eventEditorStartupMode = EventEditingMode.CreateEvent
             
             performSegue(withIdentifier: "EditEventSegue", sender: nil)
         }
@@ -103,11 +105,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let eventEditorViewController = segue.destination as? EventEditorViewController else { return }
         
-        eventEditorViewController.event = Event()
-        
-        eventEditorViewController.event.title = selectedEvent.title
-        eventEditorViewController.event.latitude = selectedEvent.latitude
-        eventEditorViewController.event.longitude = selectedEvent.longitude
+        eventEditorViewController.startupMode = eventEditorStartupMode
+        eventEditorViewController.event = selectedEvent
     }
 }
 
@@ -138,6 +137,7 @@ extension MapViewController : MKMapViewDelegate {
         EventDataManager.shared.GetSpecificEvent(event_title: selectedEvent.title, view: self) { event in
             if event != nil {
                 self.selectedEvent = event!
+                self.eventEditorStartupMode = EventEditingMode.EditEvent
                 self.performSegue(withIdentifier: "EditEventSegue", sender: nil)
             }
         }
