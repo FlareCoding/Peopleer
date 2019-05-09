@@ -2,7 +2,7 @@
 
 function connect_to_db() {
     // Create connection
-    $conn = mysqli_connect("localhost","AlbertSlepakAdmin","Al455drank2002","peopleerdatabase");
+    $conn = mysqli_connect("127.0.0.1","AlbertSlepakAdmin","Al455drank2002","peopleerdatabase");
     
     // Check connection
     if (mysqli_connect_errno())
@@ -67,9 +67,10 @@ function retrieve_all_events($connection) {
 }
 
 function get_specific_event($connection) {
-    $event_title = $_POST['event_title'];
+    $latitude = $_POST['lat'];
+    $longitude = $_POST['long'];
     
-    $sql = "SELECT * FROM events WHERE title='$event_title'";
+    $sql = "SELECT * FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
     $query_result = mysqli_query($connection, $sql);
 
     $json_result = array();
@@ -83,9 +84,10 @@ function get_specific_event($connection) {
 }
 
 function delete_event($connection) {
-    $event_title = $_POST['event_title'];
+    $latitude = $_POST['lat'];
+    $longitude = $_POST['long'];
 
-    $sql = "DELETE FROM events WHERE title='$event_title'";
+    $sql = "DELETE FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
     $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");
@@ -93,11 +95,11 @@ function delete_event($connection) {
 }
 
 function modify_event($connection) {
-    $event_title = $_POST['event_title'];
     $latitude    = $_POST['lat'];
     $longitude   = $_POST['long'];
+    $event_title = $_POST['event_title'];
 
-    $sql = "UPDATE events SET latitude='$latitude', longitude='$longitude' WHERE title='$event_title'";
+    $sql = "UPDATE events SET title='$event_title' WHERE (latitude, longitude) = ($latitude, $longitude)";
     $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");

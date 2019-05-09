@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="RdN-Tr-ceE">
     <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,6 +10,84 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Login Screen View Controller-->
+        <scene sceneID="Ype-O8-3Vy">
+            <objects>
+                <viewController id="RdN-Tr-ceE" customClass="LoginScreenViewController" customModule="PeopleerClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="eNZ-7c-1bE">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x8X-By-NTU">
+                                <rect key="frame" x="148.5" y="214.5" width="117" height="32.5"/>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="28"/>
+                                <color key="textColor" red="0.85302767229999998" green="0.86215495279999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="R2a-eK-Wn3">
+                                <rect key="frame" x="38" y="255" width="338" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4S3-jS-cFV">
+                                <rect key="frame" x="38" y="373" width="338" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2JP-tP-K0u">
+                                <rect key="frame" x="176" y="446" width="68" height="46"/>
+                                <fontDescription key="fontDescription" name="GillSans-SemiBold" family="Gill Sans" pointSize="28"/>
+                                <state key="normal" title="Login">
+                                    <color key="titleColor" red="0.85302767229999998" green="0.86215495279999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="Login:" destination="RdN-Tr-ceE" eventType="touchUpInside" id="QYj-hJ-F03"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pRW-fz-bRb">
+                                <rect key="frame" x="149" y="332" width="108" height="33"/>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="28"/>
+                                <color key="textColor" red="0.85302767229999998" green="0.86215495279999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Peopleer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cal-ok-f1s">
+                                <rect key="frame" x="138" y="147" width="153" height="42"/>
+                                <fontDescription key="fontDescription" name="GillSans-BoldItalic" family="Gill Sans" pointSize="36"/>
+                                <color key="textColor" red="0.85302767229999998" green="0.86215495279999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.53977467270000001" green="0.33645975649999998" blue="0.86423251300000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="R2a-eK-Wn3" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" id="0vd-hv-jBl"/>
+                            <constraint firstItem="cal-ok-f1s" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" constant="7.5" id="40n-d2-qOZ"/>
+                            <constraint firstItem="2JP-tP-K0u" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" constant="3" id="4dV-bR-dE1"/>
+                            <constraint firstItem="R2a-eK-Wn3" firstAttribute="top" secondItem="eNZ-7c-1bE" secondAttribute="top" constant="255" id="CI1-36-jAL"/>
+                            <constraint firstItem="4S3-jS-cFV" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" id="GTP-mZ-44V"/>
+                            <constraint firstItem="R2a-eK-Wn3" firstAttribute="top" secondItem="x8X-By-NTU" secondAttribute="bottom" constant="8" symbolic="YES" id="JCJ-EB-R9I"/>
+                            <constraint firstItem="x8X-By-NTU" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" id="NMN-DT-1fS"/>
+                            <constraint firstItem="4S3-jS-cFV" firstAttribute="top" secondItem="pRW-fz-bRb" secondAttribute="bottom" constant="8" symbolic="YES" id="Onk-MJ-cMx"/>
+                            <constraint firstItem="2JP-tP-K0u" firstAttribute="top" secondItem="4S3-jS-cFV" secondAttribute="bottom" constant="43" id="Tez-qE-syl"/>
+                            <constraint firstItem="pRW-fz-bRb" firstAttribute="centerX" secondItem="ygb-zf-2m6" secondAttribute="centerX" constant="-4" id="d8e-Yi-I4a"/>
+                            <constraint firstItem="pRW-fz-bRb" firstAttribute="top" secondItem="R2a-eK-Wn3" secondAttribute="bottom" constant="47" id="eRz-2C-mRS"/>
+                            <constraint firstItem="R2a-eK-Wn3" firstAttribute="leading" secondItem="ygb-zf-2m6" secondAttribute="leading" constant="38" id="fre-KN-fpq"/>
+                            <constraint firstItem="cal-ok-f1s" firstAttribute="top" secondItem="ygb-zf-2m6" secondAttribute="top" constant="103" id="g9a-GF-Kin"/>
+                            <constraint firstItem="R2a-eK-Wn3" firstAttribute="leading" secondItem="4S3-jS-cFV" secondAttribute="leading" id="zcn-Is-7qN"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ygb-zf-2m6"/>
+                    </view>
+                    <connections>
+                        <outlet property="passwordTextfield" destination="4S3-jS-cFV" id="VFF-z9-0sY"/>
+                        <outlet property="usernameTextfield" destination="R2a-eK-Wn3" id="kWe-Ea-dtc"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="OpenMainMenuSegue" id="nCr-1C-kNR"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KYB-0K-z97" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-930" y="108.80281690140845"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -283,5 +361,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="8gB-aP-aaf"/>
+        <segue reference="nCr-1C-kNR"/>
     </inferredMetricsTieBreakers>
 </document>

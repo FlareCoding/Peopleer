@@ -134,7 +134,10 @@ extension MapViewController : MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         selectedEvent.title = (view.annotation?.title!)!
-        EventDataManager.shared.GetSpecificEvent(event_title: selectedEvent.title, view: self) { event in
+        selectedEvent.latitude = (view.annotation?.coordinate.latitude)!
+        selectedEvent.longitude = (view.annotation?.coordinate.longitude)!
+        
+        EventDataManager.shared.GetSpecificEvent(event: selectedEvent, view: self) { event in
             if event != nil {
                 self.selectedEvent = event!
                 self.eventEditorStartupMode = EventEditingMode.EditEvent

@@ -13,7 +13,7 @@ enum EventEditingMode {
     case EditEvent
 }
 
-class EventEditorViewController: UIViewController {
+class EventEditorViewController: UIViewController, UITextFieldDelegate {
     
     var event = Event()
     private var selectedEventCopy = Event()
@@ -53,7 +53,10 @@ class EventEditorViewController: UIViewController {
         selectedEventCopy = event // preserving a copy of selected event
         
         self.initializeReturnCodes()
-        self.setupHideKeyboardOnTap()
+        
+        self.latitudeTextfield.delegate = self
+        self.longitudeTextfield.delegate = self
+        self.titleTextfield.delegate = self
         
         initializeViewBasedOnStartupMode()
         
@@ -68,19 +71,19 @@ class EventEditorViewController: UIViewController {
     }
     
     @IBAction func LatitudeTextfieldValueChanged(_ sender: UITextField) {
-        event.latitude = (Double(sender.text ?? "0.0"))!
+        event.latitude = Double(sender.text ?? "0.0") ?? 0.0
     }
     
     @IBAction func LongitudeTextfieldValueChanged(_ sender: UITextField) {
-        event.longitude = (Double(sender.text ?? "0.0"))!
+        event.longitude = Double(sender.text ?? "0.0") ?? 0.0
     }
     
     @IBAction func CreateEvent(_ sender: UIButton) {
         sender.isEnabled = false
         
         event.title = titleTextfield.text ?? "Title"
-        event.latitude = (Double(latitudeTextfield.text ?? "0.0"))!
-        event.longitude = (Double(longitudeTextfield.text ?? "0.0"))!
+        event.latitude = Double(latitudeTextfield.text ?? "0.0") ?? 0.0
+        event.longitude = Double(longitudeTextfield.text ?? "0.0") ?? 0.0
         
         EventDataManager.shared.CreateNewEvent(view: self, event: self.event) { succeeded in
             sender.isEnabled = true
@@ -96,10 +99,10 @@ class EventEditorViewController: UIViewController {
         sender.isEnabled = false
         
         event.title = titleTextfield.text ?? "Title"
-        event.latitude = (Double(latitudeTextfield.text ?? "0.0"))!
-        event.longitude = (Double(longitudeTextfield.text ?? "0.0"))!
+        event.latitude = Double(latitudeTextfield.text ?? "0.0") ?? 0.0
+        event.longitude = Double(longitudeTextfield.text ?? "0.0") ?? 0.0
         
-        EventDataManager.shared.ModifyEvent(event_title: selectedEventCopy.title, view: self, event: event) { succeeded in
+        EventDataManager.shared.ModifyEvent(eventToModify: selectedEventCopy, view: self, newEventData: event) { succeeded in
             sender.isEnabled = true
             
             if succeeded {
@@ -112,7 +115,7 @@ class EventEditorViewController: UIViewController {
     @IBAction func DeleteEvent(_ sender: UIButton) {
         sender.isEnabled = false
         
-        EventDataManager.shared.DeleteEvent(event_title: selectedEventCopy.title, view: self) { succeeded in
+        EventDataManager.shared.DeleteEvent(event: event, view: self) { succeeded in
             sender.isEnabled = true
             
             if succeeded {
@@ -155,19 +158,9 @@ class EventEditorViewController: UIViewController {
             DeleteEventButton.frame.origin.y = ChangeEventButton.frame.origin.y - ChangeEventButton.frame.size.height - 10
         }
     }
-}
-
-extension UIViewController {
-    /// Call this once to dismiss open keyboards by tapping anywhere in the view controller
-    func setupHideKeyboardOnTap() {
-        self.view.addGestureRecognizer(self.endEditingRecognizer())
-        self.navigationController?.navigationBar.addGestureRecognizer(self.endEditingRecognizer())
-    }
     
-    /// Dismisses the keyboard from self.view
-    private func endEditingRecognizer() -> UIGestureRecognizer {
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(self.view.endEditing(_:)))
-        tap.cancelsTouchesInView = false
-        return tap
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

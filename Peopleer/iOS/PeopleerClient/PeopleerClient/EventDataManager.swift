@@ -29,7 +29,8 @@ class EventDataManager {
         static let ModifyEvent          = "modify_event"
     }
     
-    private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
+    //private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
+    private let EVENTS_SERVICE_URL = "http://172.20.10.3:8000/peopleer_events_service.php"
     
     func RetrieveEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
         self.events = [] // removing all existing events
@@ -119,7 +120,7 @@ class EventDataManager {
                             let err = server_response["error"]!
                             var errorMsg = "Error: \(String(describing: err))"
                             if err.contains("Duplicate entry") {
-                                errorMsg = "Event with this name already exists"
+                                errorMsg = "Event with this exact location already exists"
                             }
                             
                             UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
@@ -134,9 +135,9 @@ class EventDataManager {
         }
     }
     
-    func GetSpecificEvent(event_title: String, view: UIViewController? = nil, completionHandler: @escaping (_ event: Event?) -> Void) {
+    func GetSpecificEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ event: Event?) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&event_title=\(event_title)"
+        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
@@ -187,9 +188,9 @@ class EventDataManager {
         }
     }
     
-    func DeleteEvent(event_title: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+    func DeleteEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.DeleteEvent)&event_title=\(event_title)"
+        var postMsg = "servreq=\(EventServiceRequests.DeleteEvent)&lat=\(event.latitude)&long=\(event.longitude)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
@@ -238,9 +239,9 @@ class EventDataManager {
         }
     }
     
-    func ModifyEvent(event_title: String, view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+    func ModifyEvent(eventToModify: Event, view: UIViewController? = nil, newEventData: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)"
+        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&lat=\(eventToModify.latitude)&long=\(eventToModify.longitude)&event_title=\(newEventData.title)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
