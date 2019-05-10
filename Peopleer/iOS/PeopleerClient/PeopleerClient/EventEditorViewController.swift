@@ -18,8 +18,6 @@ class EventEditorViewController: UIViewController, UITextFieldDelegate {
     var event = Event()
     private var selectedEventCopy = Event()
     
-    @IBOutlet weak var latitudeTextfield: UITextField!
-    @IBOutlet weak var longitudeTextfield: UITextField!
     @IBOutlet weak var titleTextfield: UITextField!
     
     @IBOutlet weak var CreateEventButton: UIButton!
@@ -53,15 +51,9 @@ class EventEditorViewController: UIViewController, UITextFieldDelegate {
         selectedEventCopy = event // preserving a copy of selected event
         
         self.initializeReturnCodes()
-        
-        self.latitudeTextfield.delegate = self
-        self.longitudeTextfield.delegate = self
         self.titleTextfield.delegate = self
         
         initializeViewBasedOnStartupMode()
-        
-        latitudeTextfield.text = String(describing: event.latitude)
-        longitudeTextfield.text = String(describing: event.longitude)
         titleTextfield.text = String(describing: event.title)
     }
     
@@ -70,20 +62,10 @@ class EventEditorViewController: UIViewController, UITextFieldDelegate {
         event.title = sender.text ?? "Title"
     }
     
-    @IBAction func LatitudeTextfieldValueChanged(_ sender: UITextField) {
-        event.latitude = Double(sender.text ?? "0.0") ?? 0.0
-    }
-    
-    @IBAction func LongitudeTextfieldValueChanged(_ sender: UITextField) {
-        event.longitude = Double(sender.text ?? "0.0") ?? 0.0
-    }
-    
     @IBAction func CreateEvent(_ sender: UIButton) {
         sender.isEnabled = false
         
         event.title = titleTextfield.text ?? "Title"
-        event.latitude = Double(latitudeTextfield.text ?? "0.0") ?? 0.0
-        event.longitude = Double(longitudeTextfield.text ?? "0.0") ?? 0.0
         
         EventDataManager.shared.CreateNewEvent(view: self, event: self.event) { succeeded in
             sender.isEnabled = true
@@ -99,8 +81,6 @@ class EventEditorViewController: UIViewController, UITextFieldDelegate {
         sender.isEnabled = false
         
         event.title = titleTextfield.text ?? "Title"
-        event.latitude = Double(latitudeTextfield.text ?? "0.0") ?? 0.0
-        event.longitude = Double(longitudeTextfield.text ?? "0.0") ?? 0.0
         
         EventDataManager.shared.ModifyEvent(eventToModify: selectedEventCopy, view: self, newEventData: event) { succeeded in
             sender.isEnabled = true
