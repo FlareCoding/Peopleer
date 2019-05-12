@@ -69,6 +69,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         for event in events {
             let annotation = MKPointAnnotation()
             annotation.title = event.title
+            annotation.subtitle = "By \(event.owner)"
             annotation.coordinate = CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)
             mapView.addAnnotation(annotation)
         }
@@ -76,7 +77,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func RemoveAllAnnotations() {
         let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
-        mapView.removeAnnotations( annotationsToRemove )
+        mapView.removeAnnotations(annotationsToRemove)
     }
     
     @IBAction func RefreshMap(_ sender: UIBarButtonItem) {
@@ -84,7 +85,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         RemoveAllAnnotations()
         
         EventDataManager.shared.RetrieveEvents(view: self) { events in
-            self.createMapAnnotations(events: EventDataManager.shared.events)
+            self.createMapAnnotations(events: events)
             sender.isEnabled = true
         }
     }
@@ -140,7 +141,13 @@ extension MapViewController : MKMapViewDelegate {
         EventDataManager.shared.GetSpecificEvent(event: selectedEvent, view: self) { event in
             if event != nil {
                 self.selectedEvent = event!
-                self.eventEditorStartupMode = EventEditingMode.EditEvent
+                
+                if self.selectedEvent.owner == LoginManager.username {
+                    self.eventEditorStartupMode = EventEditingMode.EditEvent
+                } else {
+                    self.eventEditorStartupMode = EventEditingMode.ViewEvent
+                }
+                
                 self.performSegue(withIdentifier: "EditEventSegue", sender: nil)
             }
         }

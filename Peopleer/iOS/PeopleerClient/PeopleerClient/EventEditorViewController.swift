@@ -11,6 +11,7 @@ import UIKit
 enum EventEditingMode {
     case CreateEvent
     case EditEvent
+    case ViewEvent
 }
 
 class EventEditorViewController: UIViewController, UITextFieldDelegate {
@@ -136,6 +137,11 @@ class EventEditorViewController: UIViewController, UITextFieldDelegate {
             
             ChangeEventButton.frame.origin = CreateEventButton.frame.origin
             DeleteEventButton.frame.origin.y = ChangeEventButton.frame.origin.y - ChangeEventButton.frame.size.height - 10
+        }
+        else if startupMode == .ViewEvent {
+            CreateEventButton.isHidden = true
+            ChangeEventButton.isHidden = true
+            DeleteEventButton.isHidden = true
         }
     }
     

@@ -11,6 +11,7 @@ import UIKit
 
 struct Event {
     var title       = "Title"
+    var owner       = ""
     var latitude    = 0.0
     var longitude   = 0.0
 }
@@ -29,8 +30,7 @@ class EventDataManager {
         static let ModifyEvent          = "modify_event"
     }
     
-    //private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
-    private let EVENTS_SERVICE_URL = "http://172.20.10.3:8000/peopleer_events_service.php"
+    private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
     
     func RetrieveEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
         self.events = [] // removing all existing events
@@ -75,6 +75,7 @@ class EventDataManager {
     
     private func ParseEventData(event: [String : Any]) -> Event {
         let evt = Event(title: event["title"] as! String,
+                        owner: event["owner"] as! String,
                         latitude: (event["latitude"] as! NSString).doubleValue,
                         longitude: (event["longitude"] as! NSString).doubleValue)
         return evt
@@ -82,7 +83,7 @@ class EventDataManager {
     
     func CreateNewEvent(view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.InsertEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)"
+        var postMsg = "servreq=\(EventServiceRequests.InsertEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
@@ -137,7 +138,7 @@ class EventDataManager {
     
     func GetSpecificEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ event: Event?) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)"
+        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
