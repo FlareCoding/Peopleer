@@ -35,8 +35,9 @@ function insert_event($connection) {
     $event_title = $_POST['event_title'];
     $latitude    = $_POST['lat'];
     $longitude   = $_POST['long'];
+    $username    = $_POST['username'];
 
-    $sql = "INSERT INTO events (title, latitude, longitude) VALUES ('$event_title', '$latitude', '$longitude')";
+    $sql = "INSERT INTO events (title, latitude, longitude, owner) VALUES ('$event_title', '$latitude', '$longitude', '$username')";
     $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");
@@ -67,8 +68,9 @@ function retrieve_all_events($connection) {
 }
 
 function get_specific_event($connection) {
-    $latitude = $_POST['lat'];
-    $longitude = $_POST['long'];
+    $latitude   = $_POST['lat'];
+    $longitude  = $_POST['long'];
+    $username   = $_POST['username'];
     
     $sql = "SELECT * FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
     $query_result = mysqli_query($connection, $sql);
