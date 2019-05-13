@@ -16,7 +16,7 @@ class LoginManager {
     static var password = ""
     
     static func LoginUser(username: String, password: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
-        var postMsg = "servreq=0&username=\(username)&password=\(password.sha256())"
+        var postMsg = "servreq=login&username=\(username)&password=\(password.sha256())"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: LOGIN_URL, postMsg: postMsg) { data, response, error in
@@ -58,6 +58,61 @@ class LoginManager {
                     }
                     
                     completionHandler(true)
+                }
+            }
+        }
+    }
+    
+    static func SignupUser(username: String, email: String, password: String, view: UIViewController? = nil, completionHandler: @escaping
+        (_ succeeded: Bool, _ error: String?) -> Void) {
+        
+        var postMsg = "servreq=signup&username=\(username)&email=\(email)&password=\(password.sha256())"
+        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        
+        NetworkManager.shared.postRequest(url: LOGIN_URL, postMsg: postMsg) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    let statusCode = HTTPResponse.statusCode
+                    if statusCode != 200 {
+                        // error occured
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
+                        }
+                        completionHandler(false, nil)
+                        return
+                    }
+                    
+                    guard data != nil else {
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                        }
+                        completionHandler(false, nil)
+                        return
+                    }
+                    
+                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
+                        [String : String] else {
+                            if view != nil {
+                                UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
+                            }
+                            completionHandler(false, nil)
+                            return
+                    }
+                    
+                    if server_response["status"] == "error" {
+                        let err = server_response["error"]!
+                        var errorMsg = "Error: \(String(describing: err))"
+                        if err.contains("Duplicate entry") {
+                            errorMsg = "Username taken"
+                        }
+                        if view != nil {
+                            UIUtils.showAlert(view: view!, title: "Registration Failed", message: errorMsg)
+                        }
+                        completionHandler(false, errorMsg)
+                        return
+                    }
+                    
+                    completionHandler(true, nil)
                 }
             }
         }
