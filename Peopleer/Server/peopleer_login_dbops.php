@@ -41,4 +41,24 @@ function login_user($connection) {
     echo json_encode($result);
 }
 
+function signup_user($connection) {
+    $username = $_POST['username'];
+    $email    = $_POST['email'];
+    $password = $_POST['password'];
+    
+    $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+    $result = Array();
+
+    if (mysqli_query($connection, $sql)) {
+        $result = Array("status" => "success");
+    } else {
+        $err = mysqli_error($connection);
+        error_log(print_r("[-] Error: " . $sql . "   " . $err, true));
+        $result = Array("status" => "error", "error" => $err);
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
+}
+
 ?>
