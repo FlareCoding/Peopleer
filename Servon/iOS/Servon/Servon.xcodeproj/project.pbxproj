@@ -9,9 +9,7 @@
 /* Begin PBXBuildFile section */
 		6C3AD02B226D4C9100CA8413 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AD02A226D4C9100CA8413 /* AppDelegate.swift */; };
 		6C3AD02D226D4C9100CA8413 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AD02C226D4C9100CA8413 /* ViewController.swift */; };
-		6C3AD030226D4C9100CA8413 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C3AD02E226D4C9100CA8413 /* Main.storyboard */; };
 		6C3AD035226D4C9200CA8413 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6C3AD034226D4C9200CA8413 /* Assets.xcassets */; };
-		6C3AD038226D4C9200CA8413 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C3AD036226D4C9200CA8413 /* LaunchScreen.storyboard */; };
 		6C3BEC57228F934500C6B0EB /* Servon.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6C3BEC55228F934500C6B0EB /* Servon.xcdatamodeld */; };
 		6C52935722866B9F00BEDE43 /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C52935622866B9F00BEDE43 /* LoginManager.swift */; };
 		6C5293592287BBF200BEDE43 /* SignupScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C5293582287BBF200BEDE43 /* SignupScreenViewController.swift */; };
@@ -20,8 +18,10 @@
 		6C7F9E3622779B1500325215 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F9E3522779B1500325215 /* NetworkManager.swift */; };
 		6C7F9E382277AD4D00325215 /* UIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F9E372277AD4D00325215 /* UIUtils.swift */; };
 		6C7F9E3A2279425C00325215 /* EventEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F9E392279425C00325215 /* EventEditorViewController.swift */; };
+		6C8476EE22906B45001BDB47 /* LaunchScreenController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C8476EC22906B45001BDB47 /* LaunchScreenController.storyboard */; };
+		6C8476F322906B55001BDB47 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C8476EF22906B55001BDB47 /* LaunchScreen.storyboard */; };
+		6C8476F422906B55001BDB47 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C8476F122906B55001BDB47 /* Main.storyboard */; };
 		6C8A7731228353E4006A723D /* LoginScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8A7730228353E4006A723D /* LoginScreenViewController.swift */; };
-		6CCE5E2D226E24B8009B76AB /* LaunchScreenController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6CCE5E2B226E24B8009B76AB /* LaunchScreenController.storyboard */; };
 		6CCE5E2F226E24E2009B76AB /* LaunchScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,13 +29,10 @@
 		6C3AD027226D4C9100CA8413 /* Servon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Servon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C3AD02A226D4C9100CA8413 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6C3AD02C226D4C9100CA8413 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		6C3AD02F226D4C9100CA8413 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		6C3AD032226D4C9100CA8413 /* Servon.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Servon.xcdatamodel; sourceTree = "<group>"; };
 		6C3AD034226D4C9200CA8413 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		6C3AD037226D4C9200CA8413 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6C3AD039226D4C9300CA8413 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6C3BEC52228F8C2400C6B0EB /* PeopleerClient.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PeopleerClient.xcdatamodel; sourceTree = "<group>"; };
-		6C3BEC56228F934500C6B0EB /* PeopleerClient.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PeopleerClient.xcdatamodel; sourceTree = "<group>"; };
+		6C3BEC52228F8C2400C6B0EB /* Servon.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Servon.xcdatamodel; sourceTree = "<group>"; };
+		6C3BEC56228F934500C6B0EB /* Servon.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Servon.xcdatamodel; sourceTree = "<group>"; };
 		6C52935622866B9F00BEDE43 /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		6C5293582287BBF200BEDE43 /* SignupScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupScreenViewController.swift; sourceTree = "<group>"; };
 		6C6D1D0622723D010099BA2E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -43,8 +40,10 @@
 		6C7F9E3522779B1500325215 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6C7F9E372277AD4D00325215 /* UIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIUtils.swift; sourceTree = "<group>"; };
 		6C7F9E392279425C00325215 /* EventEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventEditorViewController.swift; sourceTree = "<group>"; };
+		6C8476ED22906B45001BDB47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Servon/Servon/Base.lproj/LaunchScreenController.storyboard; sourceTree = "<group>"; };
+		6C8476F022906B55001BDB47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Servon/Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6C8476F222906B55001BDB47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Servon/Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6C8A7730228353E4006A723D /* LoginScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreenViewController.swift; sourceTree = "<group>"; };
-		6CCE5E2C226E24B8009B76AB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Servon/Base.lproj/LaunchScreenController.storyboard; sourceTree = "<group>"; };
 		6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenController.swift; sourceTree = "<group>"; };
 		6CDE9A61228F946300AE5E2C /* Servon-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Servon-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,8 +62,7 @@
 		6C3AD01E226D4C9100CA8413 = {
 			isa = PBXGroup;
 			children = (
-				6C3BEC51228F8C2400C6B0EB /* Servon.xcdatamodeld */,
-				6C3BEC55228F934500C6B0EB /* Servon.xcdatamodeld */,
+				6C8476F522906EAB001BDB47 /* Refs */,
 				6C3AD029226D4C9100CA8413 /* Servon */,
 				6C3AD028226D4C9100CA8413 /* Products */,
 			);
@@ -81,6 +79,9 @@
 		6C3AD029226D4C9100CA8413 /* Servon */ = {
 			isa = PBXGroup;
 			children = (
+				6C8476EF22906B55001BDB47 /* LaunchScreen.storyboard */,
+				6C8476EC22906B45001BDB47 /* LaunchScreenController.storyboard */,
+				6C8476F122906B55001BDB47 /* Main.storyboard */,
 				6CDE9A61228F946300AE5E2C /* Servon-Bridging-Header.h */,
 				6C3AD02A226D4C9100CA8413 /* AppDelegate.swift */,
 				6C3AD02C226D4C9100CA8413 /* ViewController.swift */,
@@ -88,19 +89,24 @@
 				6C7F9E392279425C00325215 /* EventEditorViewController.swift */,
 				6C8A7730228353E4006A723D /* LoginScreenViewController.swift */,
 				6C5293582287BBF200BEDE43 /* SignupScreenViewController.swift */,
-				6C3AD02E226D4C9100CA8413 /* Main.storyboard */,
 				6C3AD034226D4C9200CA8413 /* Assets.xcassets */,
-				6C3AD036226D4C9200CA8413 /* LaunchScreen.storyboard */,
-				6CCE5E2B226E24B8009B76AB /* LaunchScreenController.storyboard */,
 				6CCE5E2E226E24E2009B76AB /* LaunchScreenController.swift */,
 				6C3AD039226D4C9300CA8413 /* Info.plist */,
-				6C3AD031226D4C9100CA8413 /* Servon.xcdatamodeld */,
 				6C7F9E372277AD4D00325215 /* UIUtils.swift */,
 				6C7F9E3522779B1500325215 /* NetworkManager.swift */,
 				6C6D1D0822725B690099BA2E /* EventDataManager.swift */,
 				6C52935622866B9F00BEDE43 /* LoginManager.swift */,
 			);
 			path = Servon;
+			sourceTree = "<group>";
+		};
+		6C8476F522906EAB001BDB47 /* Refs */ = {
+			isa = PBXGroup;
+			children = (
+				6C3BEC51228F8C2400C6B0EB /* Servon.xcdatamodeld */,
+				6C3BEC55228F934500C6B0EB /* Servon.xcdatamodeld */,
+			);
+			path = Refs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,10 +168,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C3AD038226D4C9200CA8413 /* LaunchScreen.storyboard in Resources */,
-				6CCE5E2D226E24B8009B76AB /* LaunchScreenController.storyboard in Resources */,
+				6C8476F322906B55001BDB47 /* LaunchScreen.storyboard in Resources */,
+				6C8476F422906B55001BDB47 /* Main.storyboard in Resources */,
+				6C8476EE22906B45001BDB47 /* LaunchScreenController.storyboard in Resources */,
 				6C3AD035226D4C9200CA8413 /* Assets.xcassets in Resources */,
-				6C3AD030226D4C9100CA8413 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,28 +200,28 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		6C3AD02E226D4C9100CA8413 /* Main.storyboard */ = {
+		6C8476EC22906B45001BDB47 /* LaunchScreenController.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				6C3AD02F226D4C9100CA8413 /* Base */,
+				6C8476ED22906B45001BDB47 /* Base */,
 			);
-			name = Main.storyboard;
+			name = LaunchScreenController.storyboard;
 			sourceTree = "<group>";
 		};
-		6C3AD036226D4C9200CA8413 /* LaunchScreen.storyboard */ = {
+		6C8476EF22906B55001BDB47 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				6C3AD037226D4C9200CA8413 /* Base */,
+				6C8476F022906B55001BDB47 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		6CCE5E2B226E24B8009B76AB /* LaunchScreenController.storyboard */ = {
+		6C8476F122906B55001BDB47 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				6CCE5E2C226E24B8009B76AB /* Base */,
+				6C8476F222906B55001BDB47 /* Base */,
 			);
-			name = LaunchScreenController.storyboard;
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -350,7 +356,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = peopleer.Servon;
+				PRODUCT_BUNDLE_IDENTIFIER = servon.Servon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Servon/Servon-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -372,7 +378,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = peopleer.Servon;
+				PRODUCT_BUNDLE_IDENTIFIER = servon.Servon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Servon/Servon-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -404,35 +410,24 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		6C3AD031226D4C9100CA8413 /* Servon.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				6C3AD032226D4C9100CA8413 /* Servon.xcdatamodel */,
-			);
-			currentVersion = 6C3AD032226D4C9100CA8413 /* Servon.xcdatamodel */;
-			path = Servon.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
 		6C3BEC51228F8C2400C6B0EB /* Servon.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				6C3BEC52228F8C2400C6B0EB /* PeopleerClient.xcdatamodel */,
+				6C3BEC52228F8C2400C6B0EB /* Servon.xcdatamodel */,
 			);
-			currentVersion = 6C3BEC52228F8C2400C6B0EB /* PeopleerClient.xcdatamodel */;
+			currentVersion = 6C3BEC52228F8C2400C6B0EB /* Servon.xcdatamodel */;
 			name = Servon.xcdatamodeld;
-			path = Servon/Servon.xcdatamodeld;
+			path = ../Servon/Servon.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
 		6C3BEC55228F934500C6B0EB /* Servon.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				6C3BEC56228F934500C6B0EB /* PeopleerClient.xcdatamodel */,
+				6C3BEC56228F934500C6B0EB /* Servon.xcdatamodel */,
 			);
-			currentVersion = 6C3BEC56228F934500C6B0EB /* PeopleerClient.xcdatamodel */;
-			name = Servon.xcdatamodeld;
-			path = Servon/Servon.xcdatamodeld;
+			currentVersion = 6C3BEC56228F934500C6B0EB /* Servon.xcdatamodel */;
+			path = Servon.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
