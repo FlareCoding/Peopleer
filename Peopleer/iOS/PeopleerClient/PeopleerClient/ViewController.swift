@@ -19,5 +19,17 @@ class ViewController: UIViewController {
     @IBAction func OpenMap(_ sender: UIButton) {
         performSegue(withIdentifier: "openMapSegue", sender: self)
     }
+    
+    @IBAction func LogoutButton_OnClick(_ sender: UIBarButtonItem) {
+        
+        let manager = CoreDataManager.shared
+        let objects = manager.retrieveObjects(entity: "RememberMe")
+        if objects != nil && objects!.count > 0 {
+            objects![0].setValue(false, forKey: "enabled")
+            _ = manager.saveContext()
+        }
+        
+        performSegue(withIdentifier: "logoutSegue", sender: self)
+    }
 }
 

@@ -9,13 +9,6 @@
 import Foundation
 import UIKit
 
-struct Event {
-    var title       = "Title"
-    var owner       = ""
-    var latitude    = 0.0
-    var longitude   = 0.0
-}
-
 class EventDataManager {
     
     static let shared = EventDataManager()
@@ -77,7 +70,13 @@ class EventDataManager {
         let evt = Event(title: event["title"] as! String,
                         owner: event["owner"] as! String,
                         latitude: (event["latitude"] as! NSString).doubleValue,
-                        longitude: (event["longitude"] as! NSString).doubleValue)
+                        longitude: (event["longitude"] as! NSString).doubleValue,
+                        description: event["description"] as! String,
+                        address: event["address"] as! String,
+                        maxParticipants: Int((event["max_participants"] as! NSString).intValue),
+                        currentParticipants: Int((event["current_participants"] as! NSString).intValue),
+                        startTime: (event["start_time"] as! String).toCorrectDate(),
+                        endTime: (event["end_time"] as! String).toCorrectDate())
         return evt
     }
     
@@ -138,7 +137,7 @@ class EventDataManager {
     
     func GetSpecificEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ event: Event?) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)"
+        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in

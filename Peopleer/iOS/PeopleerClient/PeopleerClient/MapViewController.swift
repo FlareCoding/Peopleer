@@ -104,10 +104,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let eventEditorViewController = segue.destination as? EventEditorViewController else { return }
-        
-        eventEditorViewController.startupMode = eventEditorStartupMode
-        eventEditorViewController.event = selectedEvent
+        if segue.identifier == "EditEventSegue" {
+            guard let eventEditorViewController = segue.destination as? EventEditorViewController else { return }
+            
+            eventEditorViewController.startupMode = eventEditorStartupMode
+            eventEditorViewController.event = selectedEvent
+        }
+        else if segue.identifier == "ViewEventSegue" {
+            guard let eventViewerViewController = segue.destination as? EventViewerViewController else { return }
+            eventViewerViewController.event = selectedEvent
+        }
     }
 }
 
@@ -148,7 +154,7 @@ extension MapViewController : MKMapViewDelegate {
                     self.eventEditorStartupMode = EventEditingMode.ViewEvent
                 }
                 
-                self.performSegue(withIdentifier: "EditEventSegue", sender: nil)
+                self.performSegue(withIdentifier: "ViewEventSegue", sender: nil)
             }
         }
     }
