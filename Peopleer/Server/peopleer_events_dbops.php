@@ -70,7 +70,6 @@ function retrieve_all_events($connection) {
 function get_specific_event($connection) {
     $latitude   = $_POST['lat'];
     $longitude  = $_POST['long'];
-    $username   = $_POST['username'];
     
     $sql = "SELECT * FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
     $query_result = mysqli_query($connection, $sql);
