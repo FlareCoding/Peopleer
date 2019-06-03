@@ -1,152 +1,161 @@
 //
-//  EventEditorController.swift
+//  EventEditorViewController.swift
 //  PeopleerClient
 //
-//  Created by Albert Slepak on 4/30/19.
+//  Created by Albert Slepak on 6/1/19.
 //  Copyright © 2019 Albert Slepak. All rights reserved.
 //
 
 import UIKit
 
-enum EventEditingMode {
-    case CreateEvent
-    case EditEvent
-    case ViewEvent
-}
+class EventEditorViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-class EventEditorViewController: UIViewController, UITextFieldDelegate {
-    
+    var viewingMode = EventViewerViewControllerViewingMode.Edit
     var event = Event()
-    private var selectedEventCopy = Event()
     
-    @IBOutlet weak var titleTextfield: UITextField!
+    let settings = ["Title", "Address", "Description", "Start Time", "End Time", "Attendee Limit", "Contact Email"]
     
-    @IBOutlet weak var CreateEventButton: UIButton!
-    @IBOutlet weak var ChangeEventButton: UIButton!
-    @IBOutlet weak var DeleteEventButton: UIButton!
-    
-    private struct ReturnCodes {
-        static let Default          = 0
-        static let EventCreated     = 1
-        static let EventDeleted     = 2
-        static let EventModified    = 3
-    }
-    
-    var startupMode = EventEditingMode.CreateEvent
-    
-    var returnViewAlertMessages = [Int : [String]]()
-    var returnCode = ReturnCodes.Default
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ReturnToMapKitFromEventEditorSegue" && returnCode != 0 {
-            let vc = segue.destination as! MapViewController
-            vc.viewLoadedAlertTitle = returnViewAlertMessages[returnCode]![0]
-            vc.viewLoadedAlertMsg = returnViewAlertMessages[returnCode]![1]
-        }
-        
-        returnCode = ReturnCodes.Default
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        selectedEventCopy = event // preserving a copy of selected event
+    }
+
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return settings.count
+    }
+
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell: UITableViewCell
         
-        self.initializeReturnCodes()
-        self.titleTextfield.delegate = self
+        if indexPath.row == 3 || indexPath.row == 4 {
+            cell = tableView.dequeueReusableCell(withIdentifier: "eventTimeBasedSettingsCell", for: indexPath)
+        }
+        else {
+            cell = tableView.dequeueReusableCell(withIdentifier: "eventTextBasedSettingsCell", for: indexPath)
+            (cell as! EventEditorTextBasedSettingsCell).inputTextfield.text = getEventDataAsTextForCellRow(row: indexPath.row, event: event)
+        }
         
-        initializeViewBasedOnStartupMode()
-        titleTextfield.text = String(describing: event.title)
+        cell.textLabel?.text = (settings[indexPath.row] + ": ")
+        
+        return cell
     }
     
+    @IBOutlet weak var tableView: UITableView!
     
-    @IBAction func TitleTextfieldValueChanged(_ sender: UITextField) {
-        event.title = sender.text ?? "Title"
+    
+    @IBAction func SaveEventChanges_OnClick(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
     }
     
-    @IBAction func CreateEvent(_ sender: UIButton) {
-        sender.isEnabled = false
-        
-        event.title = titleTextfield.text ?? "Title"
-        
-        EventDataManager.shared.CreateNewEvent(view: self, event: self.event) { succeeded in
-            sender.isEnabled = true
-            
-            if succeeded {
-                self.returnCode = ReturnCodes.EventCreated // event successfully created
-                self.performSegue(withIdentifier: "ReturnToMapKitFromEventEditorSegue", sender: nil)
-            }
+    @IBAction func CancelEventChanges_OnClick(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: "cancelEventChangesSegue", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "saveEventChangesSegue" {
+            let vc = segue.destination as! EventViewerViewController
+            vc.viewingMode = self.viewingMode
+            vc.event = convertSettingsToEvent()
+        }
+        else if segue.identifier == "cancelEventChangesSegue" {
+            let vc = segue.destination as! EventViewerViewController
+            vc.viewingMode = self.viewingMode
+            vc.event = self.event
         }
     }
     
-    @IBAction func ChangeEvent(_ sender: UIButton) {
-        sender.isEnabled = false
-        
-        event.title = titleTextfield.text ?? "Title"
-        
-        EventDataManager.shared.ModifyEvent(eventToModify: selectedEventCopy, view: self, newEventData: event) { succeeded in
-            sender.isEnabled = true
-            
-            if succeeded {
-                self.returnCode = ReturnCodes.EventModified // event successfully changed
-                self.performSegue(withIdentifier: "ReturnToMapKitFromEventEditorSegue", sender: nil)
-            }
+    func convertSettingsToEvent() -> Event {
+        func getRowTextfield(row: Int) -> UITextField {
+            return (self.tableView.cellForRow(at: IndexPath(row: row, section: 0)) as! EventEditorTextBasedSettingsCell).inputTextfield
         }
+        
+        event.title             = getRowTextfield(row: 0).text ?? "Title"
+        event.address           = getRowTextfield(row: 1).text ?? "Not Specified"
+        event.description       = getRowTextfield(row: 2).text ?? "Not Specified"
+        event.maxParticipants   = Int(getRowTextfield(row: 5).text ?? "0") ?? 0
+        
+        return event
     }
     
-    @IBAction func DeleteEvent(_ sender: UIButton) {
-        sender.isEnabled = false
+    func getEventDataAsTextForCellRow(row: Int, event: Event) -> String {
+        var result = "Not Specified"
         
-        EventDataManager.shared.DeleteEvent(event: event, view: self) { succeeded in
-            sender.isEnabled = true
-            
-            if succeeded {
-                self.returnCode = ReturnCodes.EventDeleted // event successfully deleted
-                self.performSegue(withIdentifier: "ReturnToMapKitFromEventEditorSegue", sender: nil)
-            }
+        switch row {
+        case 0:
+            result = event.title
+            break
+        case 1:
+            result = event.address
+            break
+        case 2:
+            result = event.description
+            break
+        case 5:
+            result = String(event.maxParticipants)
+            break
+        default:
+            break
         }
+        
+        return result
     }
+}
+
+class EventEditorTextBasedSettingsCell : UITableViewCell, UITextFieldDelegate {
     
-    private func initializeReturnCodes() {
-        returnViewAlertMessages = [
-            ReturnCodes.EventCreated:   ["Event Created",   "Successfully created event"],
-            ReturnCodes.EventDeleted:   ["Event Deleted",   "Successfully deleted event"],
-            ReturnCodes.EventModified:  ["Event Modified",  "Successfully modified event"]
-        ]
-    }
-    
-    private func initializeViewBasedOnStartupMode() {
-        if startupMode == .CreateEvent {
-            CreateEventButton.isEnabled = true
-            CreateEventButton.isHidden = false
-            
-            ChangeEventButton.isEnabled = false
-            ChangeEventButton.isHidden = true
-            
-            DeleteEventButton.isEnabled = false
-            DeleteEventButton.isHidden = true
-        }
-        else if startupMode == .EditEvent {
-            CreateEventButton.isEnabled = false
-            CreateEventButton.isHidden = true
-            
-            ChangeEventButton.isEnabled = true
-            ChangeEventButton.isHidden = false
-            
-            DeleteEventButton.isEnabled = true
-            DeleteEventButton.isHidden = false
-            
-            ChangeEventButton.frame.origin = CreateEventButton.frame.origin
-            DeleteEventButton.frame.origin.y = ChangeEventButton.frame.origin.y - ChangeEventButton.frame.size.height - 10
-        }
-        else if startupMode == .ViewEvent {
-            CreateEventButton.isHidden = true
-            ChangeEventButton.isHidden = true
-            DeleteEventButton.isHidden = true
-        }
-    }
+    var inputTextfield = UITextField()
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        initializeCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        initializeCell()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        inputTextfield.frame = CGRect(x: self.frame.width / 2, y: 0, width: self.frame.width / 2, height: self.frame.height)
+    }
+    
+    private func initializeCell() {
+        // Customize cell
+        inputTextfield.delegate = self
+        inputTextfield.placeholder = "Not Set"
+        inputTextfield.font = UIFont.systemFont(ofSize: 15)
+        self.contentView.addSubview(inputTextfield)
+    }
+}
+
+class EventEditorTimeBasedSettingsCell : UITableViewCell {
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        initializeCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        initializeCell()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+    
+    private func initializeCell() {
+        // Customize cell
     }
 }

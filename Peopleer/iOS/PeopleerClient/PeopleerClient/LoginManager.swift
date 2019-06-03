@@ -10,12 +10,10 @@ import UIKit
 
 class LoginManager {
     
-    private static let LOGIN_URL = "http://158.222.244.80:8000/peopleer_login_service.php"
-    
     static var username = ""
     static var password = ""
     
-    static func LoginUser(username: String, password: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+    static func LoginUser(username: String, password: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool, _ error: Error?) -> Void) {
         var postMsg = "servreq=login&username=\(username)&password=\(password.sha256())"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
@@ -28,7 +26,7 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
                         }
-                        completionHandler(false)
+                        completionHandler(false, error)
                         return
                     }
                     
@@ -36,7 +34,7 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
                         }
-                        completionHandler(false)
+                        completionHandler(false, error)
                         return
                     }
                     
@@ -45,7 +43,7 @@ class LoginManager {
                             if view != nil {
                                 UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
                             }
-                            completionHandler(false)
+                            completionHandler(false, error)
                             return
                     }
                     
@@ -53,18 +51,20 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Incorrect Login Info", message: server_response["error"] ?? "Unknown Error")
                         }
-                        completionHandler(false)
+                        completionHandler(false, error)
                         return
                     }
                     
-                    completionHandler(true)
+                    completionHandler(true, error)
                 }
+                
+                completionHandler(false, error)
             }
         }
     }
     
     static func SignupUser(username: String, email: String, password: String, view: UIViewController? = nil, completionHandler: @escaping
-        (_ succeeded: Bool, _ error: String?) -> Void) {
+        (_ succeeded: Bool, _ error: Error?, _ errorString: String?) -> Void) {
         
         var postMsg = "servreq=signup&username=\(username)&email=\(email)&password=\(password.sha256())"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
@@ -78,7 +78,7 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
                         }
-                        completionHandler(false, nil)
+                        completionHandler(false, error, nil)
                         return
                     }
                     
@@ -86,7 +86,7 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
                         }
-                        completionHandler(false, nil)
+                        completionHandler(false, error, nil)
                         return
                     }
                     
@@ -95,7 +95,7 @@ class LoginManager {
                             if view != nil {
                                 UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
                             }
-                            completionHandler(false, nil)
+                            completionHandler(false, error, nil)
                             return
                     }
                     
@@ -108,11 +108,11 @@ class LoginManager {
                         if view != nil {
                             UIUtils.showAlert(view: view!, title: "Registration Failed", message: errorMsg)
                         }
-                        completionHandler(false, errorMsg)
+                        completionHandler(false, error, errorMsg)
                         return
                     }
                     
-                    completionHandler(true, nil)
+                    completionHandler(true, error, nil)
                 }
             }
         }

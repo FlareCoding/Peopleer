@@ -10,14 +10,19 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var openMapBtn: UIButton!
+    @IBOutlet weak var navigationBarTitleItem: UINavigationItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationBarTitleItem.title = LoginManager.username
     }
-
-    @IBAction func OpenMap(_ sender: UIButton) {
+    
+    @IBAction func OpenMap_OnClick(_ sender: UIButton) {
         performSegue(withIdentifier: "openMapSegue", sender: self)
+    }
+    
+    @IBAction func MyEvents_OnClick(_ sender: UIButton) {
+        performSegue(withIdentifier: "viewMyEventsSegue", sender: self)
     }
     
     @IBAction func LogoutButton_OnClick(_ sender: UIBarButtonItem) {

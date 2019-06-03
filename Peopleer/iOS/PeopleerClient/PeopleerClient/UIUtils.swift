@@ -25,6 +25,17 @@ class UIUtils {
         view.present(alert, animated: true, completion: nil)
     }
     
+    static func showConfirmAlert(view: UIViewController, title: String, message: String, actionHandler: @escaping (_ result: Bool) -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default, handler: { (action: UIAlertAction) in
+            actionHandler(false)
+        }))
+        alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { (action: UIAlertAction) in
+            actionHandler(true)
+        }))
+        view.present(alert, animated: true, completion: nil)
+    }
+    
     static func currentTopViewController() -> UIViewController {
         var topVC: UIViewController? = UIApplication.shared.delegate?.window?!.rootViewController
         while ((topVC?.presentedViewController) != nil) {
@@ -32,4 +43,5 @@ class UIUtils {
         }
         return topVC!
     }
+    
 }

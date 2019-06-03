@@ -23,8 +23,6 @@ class EventDataManager {
         static let ModifyEvent          = "modify_event"
     }
     
-    private let EVENTS_SERVICE_URL = "http://158.222.244.80:8000/peopleer_events_service.php"
-    
     func RetrieveEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
         self.events = [] // removing all existing events
         
@@ -82,7 +80,7 @@ class EventDataManager {
     
     func CreateNewEvent(view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.InsertEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)"
+        var postMsg = "servreq=\(EventServiceRequests.InsertEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)&address=\(event.address)&description=\(event.description)&start_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))&end_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))&max_participants=\(String(event.maxParticipants))"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
@@ -239,9 +237,9 @@ class EventDataManager {
         }
     }
     
-    func ModifyEvent(eventToModify: Event, view: UIViewController? = nil, newEventData: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+    func ModifyEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&lat=\(eventToModify.latitude)&long=\(eventToModify.longitude)&event_title=\(newEventData.title)"
+        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&lat=\(event.latitude)&long=\(event.longitude)&event_title=\(event.title)&username=\(LoginManager.username)&address=\(event.address)&description=\(event.description)&start_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))&end_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))&max_participants=\(String(event.maxParticipants))"
         postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in

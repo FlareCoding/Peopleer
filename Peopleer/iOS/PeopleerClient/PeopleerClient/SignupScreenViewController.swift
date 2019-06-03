@@ -40,21 +40,25 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        LoginManager.SignupUser(username: usernameTextfield.text!, email: emailTextfield.text!, password: passwordTextfield.text!, view: self) { succeeded, error in
+        LoginManager.SignupUser(username: usernameTextfield.text!, email: emailTextfield.text!, password: passwordTextfield.text!, view: self) { succeeded, error, errorString  in
             if (succeeded) {
                 UIUtils.showAlert(view: self, title: "Success", message: "You have successfully registered!") {
                     self.performSegue(withIdentifier: "ReturnToLoginScreenSegue", sender: nil)
                 }
             }
             else {
-                if error != nil {
-                    if error! == "Username taken" {
+                if errorString != nil {
+                    if errorString! == "Username taken" {
                         self.errorLabel.text = "Username taken"
                     } else {
                         self.errorLabel.text = "Error occured"
                     }
                     self.errorLabel.isHidden = false
                 }
+            }
+            
+            if error != nil {
+                UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
             }
         }
     }

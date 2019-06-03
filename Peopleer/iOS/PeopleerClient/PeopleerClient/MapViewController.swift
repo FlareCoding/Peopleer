@@ -22,7 +22,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     var viewLoadedAlertMsg: String? = nil
     
     private var selectedEvent = Event()
-    var eventEditorStartupMode = EventEditingMode.CreateEvent
+    var eventViewingMode = EventViewerViewControllerViewingMode.View
     
     override func viewDidAppear(_ animated: Bool) {
         if viewLoadedAlertMsg != nil && viewLoadedAlertTitle != nil {
@@ -95,24 +95,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             let point = sender.location(in: mapView)
             let tapPoint = mapView.convert(point, toCoordinateFrom: view)
             
+            selectedEvent = Event()
+            
             selectedEvent.latitude = tapPoint.latitude
             selectedEvent.longitude = tapPoint.longitude
-            eventEditorStartupMode = EventEditingMode.CreateEvent
+            eventViewingMode = .Create
             
-            performSegue(withIdentifier: "EditEventSegue", sender: nil)
+            performSegue(withIdentifier: "ViewEventSegue", sender: nil)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "EditEventSegue" {
-            guard let eventEditorViewController = segue.destination as? EventEditorViewController else { return }
-            
-            eventEditorViewController.startupMode = eventEditorStartupMode
-            eventEditorViewController.event = selectedEvent
-        }
-        else if segue.identifier == "ViewEventSegue" {
+        if segue.identifier == "ViewEventSegue" {
             guard let eventViewerViewController = segue.destination as? EventViewerViewController else { return }
             eventViewerViewController.event = selectedEvent
+            eventViewerViewController.viewingMode = eventViewingMode
         }
     }
 }
@@ -149,9 +146,9 @@ extension MapViewController : MKMapViewDelegate {
                 self.selectedEvent = event!
                 
                 if self.selectedEvent.owner == LoginManager.username {
-                    self.eventEditorStartupMode = EventEditingMode.EditEvent
+                    self.eventViewingMode = .Edit
                 } else {
-                    self.eventEditorStartupMode = EventEditingMode.ViewEvent
+                    self.eventViewingMode = .View
                 }
                 
                 self.performSegue(withIdentifier: "ViewEventSegue", sender: nil)

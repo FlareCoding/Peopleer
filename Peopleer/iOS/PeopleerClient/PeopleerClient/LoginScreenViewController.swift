@@ -31,11 +31,14 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                 let usernameString = rememberMeObject.value(forKey: "username") as! String
                 let passwordString = rememberMeObject.value(forKey: "password") as! String
                 
-                LoginManager.LoginUser(username: usernameString, password: passwordString, view: self) { succeeded in
+                LoginManager.LoginUser(username: usernameString, password: passwordString, view: self) { succeeded, error  in
                     if succeeded {
                         LoginManager.username = usernameString
                         LoginManager.password = passwordString
                         self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
+                    }
+                    else if error != nil {
+                        UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
                     }
                 }
             }
@@ -57,7 +60,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
         let username = usernameTextfield.text!
         let password = passwordTextfield.text!
         
-        LoginManager.LoginUser(username: username, password: password, view: self) { succeeded in
+        LoginManager.LoginUser(username: username, password: password, view: self) { succeeded, error in
             sender.isEnabled = true
             
             if succeeded {
@@ -96,11 +99,14 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                 
                 self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
             }
+            else if error != nil {
+                UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
+            }
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-    return true
+        return true
     }
 }
