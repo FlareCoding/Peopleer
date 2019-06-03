@@ -31,13 +31,31 @@ function perform_query($connection, $query) {
     return $result;
 }
 
+function verify_user($connection, $username, $password) {
+    $sql = "SELECT * FROM users WHERE username='$username'";
+    $query_result = mysqli_query($connection, $sql);
+
+    if (mysqli_num_rows($query_result) == 1) {
+        $row = mysqli_fetch_array($query_result);
+        if ($row['password'] == $password) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function insert_event($connection) {
     $event_title = $_POST['event_title'];
     $latitude    = $_POST['lat'];
     $longitude   = $_POST['long'];
     $username    = $_POST['username'];
+    $address     = $_POST['address'];
+    $description = $_POST['description'];
+    $start_time  = $_POST['start_time'];
+    $end_time    = $_POST['end_time'];
+    $max_participants = $_POST['max_participants'];
 
-    $sql = "INSERT INTO events (title, latitude, longitude, owner) VALUES ('$event_title', '$latitude', '$longitude', '$username')";
+    $sql = "INSERT INTO events (title, latitude, longitude, owner, address, description, start_time, end_time, max_participants, current_participants) VALUES ('$event_title', '$latitude', '$longitude', '$username', '$address', '$description', '$start_time', '$end_time', '$max_participants', '0')";
     $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");
@@ -99,8 +117,14 @@ function modify_event($connection) {
     $latitude    = $_POST['lat'];
     $longitude   = $_POST['long'];
     $event_title = $_POST['event_title'];
+    $username    = $_POST['username'];
+    $address     = $_POST['address'];
+    $description = $_POST['description'];
+    $start_time  = $_POST['start_time'];
+    $end_time    = $_POST['end_time'];
+    $max_participants = $_POST['max_participants'];
 
-    $sql = "UPDATE events SET title='$event_title' WHERE (latitude, longitude) = ($latitude, $longitude)";
+    $sql = "UPDATE events SET title='$event_title', address='$address', description='$description', start_time='$start_time', end_time='$end_time', max_participants='$max_participants' WHERE (latitude, longitude) = ($latitude, $longitude) AND owner = '$username'";
     $result = perform_query($connection, $sql);
 
     header("Content-Type: application/json");
