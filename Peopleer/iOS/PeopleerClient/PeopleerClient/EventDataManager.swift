@@ -21,6 +21,8 @@ class EventDataManager {
         static let GetSpecificEvent     = "get_specific_event"
         static let DeleteEvent          = "delete_event"
         static let ModifyEvent          = "modify_event"
+        static let GetEventsBasedOnOwner = "get_events_based_on_owner"
+        static let GetEventsBasedOnTitle = "get_events_based_on_title"
     }
     
     func RetrieveEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
@@ -284,6 +286,47 @@ class EventDataManager {
                     
                     completionHandler(true)
                 }
+            }
+        }
+    }
+    
+    func RetrieveEventsBasedOnFilter(view: UIViewController? = nil, eventOwner: String, completionHandler: @escaping (_ events: [Event]) -> Void) {
+        var retrievedEvents: [Event] = []
+        
+        var postMsg = "servreq=\(EventServiceRequests.GetEventsBasedOnOwner)&username=\(eventOwner)"
+        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured when conneting to server")
+                    }
+                    completionHandler(retrievedEvents)
+                    return
+                }
+                
+                guard data != nil else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "Data Error", message: "No data was recieved from the server")
+                    }
+                    completionHandler(retrievedEvents)
+                    return
+                }
+                
+                guard let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [[String : Any]] else {
+                    if view != nil {
+                        UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
+                    }
+                    completionHandler(retrievedEvents)
+                    return
+                }
+                
+                for event in json {
+                    retrievedEvents.append(self.ParseEventData(event: event))
+                }
+                
+                completionHandler(retrievedEvents)
             }
         }
     }

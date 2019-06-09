@@ -77,7 +77,6 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                             "username": username,
                             "password": password
                             ])
-                        print("Inserted New Username and Password")
                     }
                     else {
                         // update username and password of existing object
@@ -85,7 +84,6 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                         objects![0].setValue(password, forKey: "password")
                         objects![0].setValue(self.rememberMeSwitch.isOn, forKey: "enabled")
                         _ = manager.saveContext()
-                        print("Updated Username and Password")
                     }
                 }
                 else {
@@ -94,7 +92,6 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                         "username": username,
                         "password": password
                         ])
-                    print("Inserted New Username and Password")
                 }
                 
                 self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)

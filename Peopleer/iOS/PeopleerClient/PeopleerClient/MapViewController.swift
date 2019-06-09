@@ -110,6 +110,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             guard let eventViewerViewController = segue.destination as? EventViewerViewController else { return }
             eventViewerViewController.event = selectedEvent
             eventViewerViewController.viewingMode = eventViewingMode
+            eventViewerViewController.exitSegueIdentifier = "returnToMapSegue"
         }
     }
 }

@@ -18,6 +18,7 @@ class EventViewerViewController: UIViewController {
     
     var event = Event()
     var viewingMode = EventViewerViewControllerViewingMode.View
+    var exitSegueIdentifier = ""
     
     @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
     @IBOutlet weak var updateEventNavigationBarButton: UIBarButtonItem!
@@ -74,9 +75,14 @@ class EventViewerViewController: UIViewController {
             let vc = segue.destination as! EventEditorViewController
             vc.viewingMode = self.viewingMode
             vc.event = self.event
+            vc.eventViewerExitSegueIndetifierCopy = self.exitSegueIdentifier
         }
     }
-
+    
+    @IBAction func ReturnNavigationBarButton_OnClick(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
+    }
+    
     @IBAction func UpdateEventButton_OnClick(_ sender: UIBarButtonItem) {
         if viewingMode == .Create {
             UIUtils.showConfirmAlert(view: self, title: "Creating Event", message: "Are you sure you want to create new event?") { result in
@@ -106,7 +112,7 @@ class EventViewerViewController: UIViewController {
         EventDataManager.shared.CreateNewEvent(view: self, event: event) { succeeded in
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully created new event!") {
-                    self.performSegue(withIdentifier: "returnToMapSegue", sender: nil)
+                    self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
                 }
             }
         }
@@ -116,7 +122,7 @@ class EventViewerViewController: UIViewController {
         EventDataManager.shared.ModifyEvent(event: event, view: self) { succeeded in
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully updated event!") {
-                    self.performSegue(withIdentifier: "returnToMapSegue", sender: nil)
+                    self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
                 }
             }
         }
@@ -126,7 +132,7 @@ class EventViewerViewController: UIViewController {
         EventDataManager.shared.DeleteEvent(event: event, view: self) { succeeded in
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully deleted event!") {
-                    self.performSegue(withIdentifier: "returnToMapSegue", sender: nil)
+                    self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
                 }
             }
         }
