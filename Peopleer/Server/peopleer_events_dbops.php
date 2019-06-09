@@ -131,4 +131,26 @@ function modify_event($connection) {
     echo json_encode($result);
 }
 
+function get_events_based_on_owner($connection) {
+    $username = $_POST['username'];
+
+    $sql = "SELECT * FROM events WHERE owner = '$username'";
+    $query_result = mysqli_query($connection, $sql);
+
+    $json_result = array();
+
+    if ($result = mysqli_query($connection, $sql))
+    {
+        $json_result = array();
+    
+        while($row = $result->fetch_object())
+        {
+            array_push($json_result, $row);
+        }
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($json_result);
+}
+
 ?>

@@ -15,6 +15,8 @@ if ($service_request == "get_all_events") {
     delete_event($connection);
 } else if ($service_request == "modify_event") {
     modify_event($connection);
+} else if ($service_request == "get_events_based_on_owner") {
+    get_events_based_on_owner($connection);
 }
 
 close_db_connection($connection);
