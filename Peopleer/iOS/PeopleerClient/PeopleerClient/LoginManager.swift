@@ -8,10 +8,26 @@
 
 import UIKit
 
+struct User {
+    var username    = "Error"
+    var country     = "Error"
+    var city        = "Error"
+    var hoursVolunteered = 0
+    var impact = 0
+}
+
 class LoginManager {
     
     static var username = ""
     static var password = ""
+    
+    static private func validateEmail(email: String) -> Bool {
+        
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: email)
+        
+    }
     
     static func LoginUser(username: String, password: String, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool, _ error: Error?) -> Void) {
         var postMsg = "servreq=login&username=\(username)&password=\(password.sha256())"

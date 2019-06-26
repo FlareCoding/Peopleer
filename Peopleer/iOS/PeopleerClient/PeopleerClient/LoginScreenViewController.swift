@@ -21,6 +21,10 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
         self.usernameTextfield.delegate = self
         self.passwordTextfield.delegate = self
         
+        //
+        // Pull value of "RememberMe" field from CoreData and if the value is true, then send the login request to the server.
+        // If the value is false, then set username textfield text to last used username retrieved from CoreData.
+        //
         let manager = CoreDataManager.shared
         let objects = manager.retrieveObjects(entity: "RememberMe")
         if objects != nil {
@@ -71,7 +75,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                 let objects = manager.retrieveObjects(entity: "RememberMe")
                 if objects != nil {
                     if objects?.count == 0 {
-                        // insert new object
+                        // Insert new object if it doesn't exist already
                         _ = manager.insertData(entity: "RememberMe", attribs: [
                             "enabled": self.rememberMeSwitch.isOn,
                             "username": username,
@@ -79,7 +83,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                             ])
                     }
                     else {
-                        // update username and password of existing object
+                        // Update username and password of existing object
                         objects![0].setValue(username, forKey: "username")
                         objects![0].setValue(password, forKey: "password")
                         objects![0].setValue(self.rememberMeSwitch.isOn, forKey: "enabled")
@@ -87,6 +91,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                     }
                 }
                 else {
+                    // Insert new object because it doesn't exist yet ("objects" is nil)
                     _ = manager.insertData(entity: "RememberMe", attribs: [
                         "enabled": self.rememberMeSwitch.isOn,
                         "username": username,
@@ -97,12 +102,14 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                 self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
             }
             else if error != nil {
+                // Failed to connect to the server
                 UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
             }
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Hide keyboard when "return" key is pressed
         textField.resignFirstResponder()
         return true
     }

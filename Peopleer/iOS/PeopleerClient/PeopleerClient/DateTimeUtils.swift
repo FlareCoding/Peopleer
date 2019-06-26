@@ -40,7 +40,6 @@ class DateTimeUtils {
         let day = eventDateComponents[2]
         let year = eventDateComponents[3]
         let dateAsString = "\(year)-\(String(describing: monthNumber))-\(day) \(time):00"
-        //let dateAsString = year + "-" + monthNumber + "-" + day + " " + time + ":00"
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"

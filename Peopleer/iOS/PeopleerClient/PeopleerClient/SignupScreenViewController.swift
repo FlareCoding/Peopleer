@@ -16,6 +16,7 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var confirmPasswordTextfield: UITextField!
     @IBOutlet weak var errorLabel: UILabel!
     
+    private let errorBorderWidth: CGFloat = 2.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +30,7 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Hides the keyboard when the "return" key is pressed
         textField.resignFirstResponder()
         return true
     }
@@ -64,6 +66,7 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
     }
     
     func ResetUIProperties() {
+        // Set border width of all textfields to zero and hide the error label
         errorLabel.isHidden = true
         usernameTextfield.layer.borderWidth = 0.0
         emailTextfield.layer.borderWidth = 0.0
@@ -72,25 +75,29 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
     }
     
     func CheckDataCorrectness() -> Bool {
+        //
+        // Check each textfield for presence of all required information.
+        // If any information is missing from a textfield, show a red border around it
+        //
         if  usernameTextfield.text!.isEmpty ||
             emailTextfield.text!.isEmpty    ||
             passwordTextfield.text!.isEmpty ||
             confirmPasswordTextfield.text!.isEmpty {
             
             if usernameTextfield.text!.isEmpty {
-                usernameTextfield.layer.borderWidth = 1.0
+                usernameTextfield.layer.borderWidth = errorBorderWidth
                 usernameTextfield.layer.borderColor = UIColor.red.cgColor
             }
             if emailTextfield.text!.isEmpty {
-                emailTextfield.layer.borderWidth = 1.0
+                emailTextfield.layer.borderWidth = errorBorderWidth
                 emailTextfield.layer.borderColor = UIColor.red.cgColor
             }
             if passwordTextfield.text!.isEmpty {
-                passwordTextfield.layer.borderWidth = 1.0
+                passwordTextfield.layer.borderWidth = errorBorderWidth
                 passwordTextfield.layer.borderColor = UIColor.red.cgColor
             }
             if confirmPasswordTextfield.text!.isEmpty {
-                confirmPasswordTextfield.layer.borderWidth = 1.0
+                confirmPasswordTextfield.layer.borderWidth = errorBorderWidth
                 confirmPasswordTextfield.layer.borderColor = UIColor.red.cgColor
             }
             
@@ -98,12 +105,13 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
             return false
         }
         
+        // If passwords in the "password" and "confirm password" textfields don't match
         if passwordTextfield.text! != confirmPasswordTextfield.text! {
             errorLabel.text = "Passwords don't match"
             
-            passwordTextfield.layer.borderWidth = 1.0
+            passwordTextfield.layer.borderWidth = errorBorderWidth
             passwordTextfield.layer.borderColor = UIColor.red.cgColor
-            confirmPasswordTextfield.layer.borderWidth = 1.0
+            confirmPasswordTextfield.layer.borderWidth = errorBorderWidth
             confirmPasswordTextfield.layer.borderColor = UIColor.red.cgColor
             return false
         }
