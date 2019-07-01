@@ -39,7 +39,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         RemoveAllAnnotations()
         
         // Fetches all events and adds them to the map as flag icons
-        EventDataManager.shared.RetrieveEvents(view: self) { events in
+        EventDataManager.shared.RetrieveAllEvents(view: self) { events in
             self.createMapAnnotations(events: EventDataManager.shared.events)
         }
         
@@ -103,7 +103,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         RemoveAllAnnotations()
         
         // Fetches new list of events from the server and adds them to the map as new annotations
-        EventDataManager.shared.RetrieveEvents(view: self) { events in
+        EventDataManager.shared.RetrieveAllEvents(view: self) { events in
             self.createMapAnnotations(events: events)
             sender.isEnabled = true
         }

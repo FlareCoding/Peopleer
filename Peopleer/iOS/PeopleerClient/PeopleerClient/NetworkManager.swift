@@ -7,6 +7,23 @@
 //
 
 import Foundation
+import UIKit
+
+class ServerRequestBuilder {
+    private var postMessageString = ""
+    
+    init(servreq: String) {
+        postMessageString = "servreq=\(servreq)"
+    }
+    
+    func addAttrib(name: String, value: Any) {
+        postMessageString.append("&\(name)=\(value)")
+    }
+    
+    func getPostRequest() -> String {
+        return postMessageString.replacingOccurrences(of: " ", with: "%20")
+    }
+}
 
 class NetworkManager {
     
@@ -39,5 +56,35 @@ class NetworkManager {
             completionHandler(data, response, error)
         }
         dataTask.resume()
+    }
+    
+    func CheckReceivedServerData<T>(httpResponse: HTTPURLResponse, data: Data?, view: UIViewController?,
+                                            completion: (_ serverResponse: T) -> Void) -> Bool {
+        let statusCode = httpResponse.statusCode
+        if statusCode != 200 {
+            // error occured
+            if view != nil {
+                UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
+            }
+            return false
+        }
+        
+        guard data != nil else {
+            if view != nil {
+                UIUtils.showAlert(view: view!, title: "Response Error", message: "No data was received")
+            }
+            return false
+        }
+        
+        guard let serverResponse = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
+            T else {
+                if view != nil {
+                    UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                }
+                return false
+        }
+        
+        completion(serverResponse)
+        return true
     }
 }

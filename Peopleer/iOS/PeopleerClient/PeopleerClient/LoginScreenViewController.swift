@@ -22,41 +22,10 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
         self.passwordTextfield.delegate = self
         
         //
-        // Pull value of "RememberMe" field from CoreData and if the value is true, then send the login request to the server.
+        // Pull the value of "RememberMe" field from CoreData and if the value is true, then send the login request to the server.
         // If the value is false, then set username textfield text to last used username retrieved from CoreData.
         //
-        let manager = CoreDataManager.shared
-        let objects = manager.retrieveObjects(entity: "RememberMe")
-        if objects != nil {
-            let rememberMeEnabled = manager.getObject(managedObjectPool: objects!, keyName: "enabled", value: true)
-            
-            if objects?.count == 1 && rememberMeEnabled != nil {
-                let rememberMeObject = objects![0]
-                let usernameString = rememberMeObject.value(forKey: "username") as! String
-                let passwordString = rememberMeObject.value(forKey: "password") as! String
-                
-                LoginManager.LoginUser(username: usernameString, password: passwordString, view: self) { succeeded, error  in
-                    if succeeded {
-                        LoginManager.username = usernameString
-                        LoginManager.password = passwordString
-                        self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
-                    }
-                    else if error != nil {
-                        UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
-                    }
-                }
-            }
-            else {
-                if objects?.count == 1 {
-                    usernameTextfield.text = objects![0].value(forKey: "username") as? String
-                }
-                
-                rememberMeSwitch.isOn = false
-            }
-        }
-        else {
-            rememberMeSwitch.isOn = false
-        }
+        CheckPreviousLoginStatus()
     }
     
     @IBAction func Login(_ sender: UIButton) {
@@ -112,5 +81,40 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
         // Hide keyboard when "return" key is pressed
         textField.resignFirstResponder()
         return true
+    }
+    
+    private func CheckPreviousLoginStatus() {
+        let manager = CoreDataManager.shared
+        let objects = manager.retrieveObjects(entity: "RememberMe")
+        if objects != nil {
+            let rememberMeEnabled = manager.getObject(managedObjectPool: objects!, keyName: "enabled", value: true)
+            
+            if objects?.count == 1 && rememberMeEnabled != nil {
+                let rememberMeObject = objects![0]
+                let usernameString = rememberMeObject.value(forKey: "username") as! String
+                let passwordString = rememberMeObject.value(forKey: "password") as! String
+                
+                LoginManager.LoginUser(username: usernameString, password: passwordString, view: self) { succeeded, error  in
+                    if succeeded {
+                        LoginManager.username = usernameString
+                        LoginManager.password = passwordString
+                        self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
+                    }
+                    else if error != nil {
+                        UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
+                    }
+                }
+            }
+            else {
+                if objects?.count == 1 {
+                    usernameTextfield.text = objects![0].value(forKey: "username") as? String
+                }
+                
+                rememberMeSwitch.isOn = false
+            }
+        }
+        else {
+            rememberMeSwitch.isOn = false
+        }
     }
 }

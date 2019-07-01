@@ -34,7 +34,7 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         
         // Fetch user events from the server
-        EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventOwner: LoginManager.username) { events in
+        EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .owner, filter: LoginManager.username) { events in
             self.myEvents = events
             self.myEventsHardCopy = events // saving a copy of all events
             self.tableView.reloadData()

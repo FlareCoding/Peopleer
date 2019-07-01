@@ -9,6 +9,11 @@
 import Foundation
 import UIKit
 
+enum EventSearchFilter {
+    case owner
+    case title
+}
+
 class EventDataManager {
     
     static let shared = EventDataManager()
@@ -21,49 +26,10 @@ class EventDataManager {
         static let GetSpecificEvent     = "get_specific_event"
         static let DeleteEvent          = "delete_event"
         static let ModifyEvent          = "modify_event"
+        static let JoinEvent            = "join_event"
+        static let IsUserInEvent        = "is_user_in_event"
         static let GetEventsBasedOnOwner = "get_events_based_on_owner"
         static let GetEventsBasedOnTitle = "get_events_based_on_title"
-    }
-    
-    func RetrieveEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
-        self.events = [] // removing all existing events
-        
-        var postMsg = "servreq=\(EventServiceRequests.GetAllEvents)"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
-        
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured when conneting to server")
-                    }
-                    completionHandler(self.events)
-                    return
-                }
-                
-                guard data != nil else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "Data Error", message: "No data was recieved from the server")
-                    }
-                    completionHandler(self.events)
-                    return
-                }
-                
-                guard let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [[String : Any]] else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
-                    }
-                    completionHandler(self.events)
-                    return
-                }
-                
-                for event in json {
-                    self.events.append(self.ParseEventData(event: event))
-                }
-                
-                completionHandler(self.events)
-            }
-        }
     }
     
     private func ParseEventData(event: [String : Any]) -> Event {
@@ -80,253 +46,298 @@ class EventDataManager {
         return evt
     }
     
-    func CreateNewEvent(view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+    func RetrieveAllEvents(view: UIViewController? = nil, completionHandler: @escaping (_ events: [Event]) -> Void) {
+        self.events = [] // removing all existing events
         
-        var postMsg = "servreq=\(EventServiceRequests.InsertEvent)&event_title=\(event.title)&lat=\(event.latitude)&long=\(event.longitude)&username=\(LoginManager.username)&address=\(event.address)&description=\(event.description)&start_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))&end_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))&max_participants=\(String(event.maxParticipants))"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetAllEvents)
         
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
-                    let statusCode = HTTPResponse.statusCode
-                    if statusCode != 200 {
-                        // error occured
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [[String : Any]]) in
+                        
+                        for event in serverResponse {
+                            self.events.append(self.ParseEventData(event: event))
                         }
-                        completionHandler(false)
+                        
+                    }) == true) else {
+                        completionHandler(self.events)
                         return
                     }
-                    
-                    guard data != nil else {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
-                        [String : String] else {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    if server_response["status"] == "error" {
-                        if view != nil {
-                            let err = server_response["error"]!
-                            var errorMsg = "Error: \(String(describing: err))"
-                            if err.contains("Duplicate entry") {
-                                errorMsg = "Event with this exact location already exists"
+                }
+                
+                completionHandler(self.events)
+            }
+        }
+    }
+    
+    func CreateNewEvent(view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+        
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.InsertEvent)
+        requestBuilder.addAttrib(name: "lat",                   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",                  value: event.longitude)
+        requestBuilder.addAttrib(name: "event_title",           value: event.title)
+        requestBuilder.addAttrib(name: "username",              value: LoginManager.username)
+        requestBuilder.addAttrib(name: "address",               value: event.address)
+        requestBuilder.addAttrib(name: "description",           value: event.description)
+        requestBuilder.addAttrib(name: "start_time",            value: DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))
+        requestBuilder.addAttrib(name: "end_time",              value: DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))
+        requestBuilder.addAttrib(name: "max_participants",      value: event.maxParticipants)
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        if serverResponse["status"] == "error" {
+                            if view != nil {
+                                let err = serverResponse["error"]!
+                                var errorMsg = "\(String(describing: err))"
+                                if err.contains("Duplicate entry") {
+                                    errorMsg = "Event with this exact location already exists"
+                                }
+                                
+                                UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
                             }
-                            
-                            UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
+                            completionHandler(false)
+                            return
                         }
+                        
+                    }) == true) else {
                         completionHandler(false)
                         return
                     }
                     
                     completionHandler(true)
+                    return
                 }
+                
+                completionHandler(false)
             }
         }
     }
     
     func GetSpecificEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ event: Event?) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.GetSpecificEvent)&lat=\(event.latitude)&long=\(event.longitude)"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetSpecificEvent)
+        requestBuilder.addAttrib(name: "lat",   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",  value: event.longitude)
         
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
                     var result_evt: Event? = nil
-                    let statusCode = HTTPResponse.statusCode
-                    if statusCode != 200 {
-                        // error occured
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
-                        }
-                        completionHandler(result_evt)
-                        return
-                    }
                     
-                    guard data != nil else {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
-                        }
-                        completionHandler(result_evt)
-                        return
-                    }
-                    
-                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
-                        [[String : String]] else {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [[String : String]]) in
+                        
+                        if serverResponse.count < 1 {
                             if view != nil {
-                                UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
+                                UIUtils.showAlert(view: view!, title: "Error", message: "Could not load event data")
                             }
                             completionHandler(result_evt)
                             return
-                    }
-                    
-                    if server_response.count < 1 {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Error", message: "Could not load event data")
                         }
+                        
+                        let event_data = serverResponse[0]
+                        result_evt = self.ParseEventData(event: event_data)
+                        
+                    }) == true) else {
                         completionHandler(result_evt)
                         return
                     }
                     
-                    let event_data = server_response[0]
-                    result_evt = self.ParseEventData(event: event_data)
-                    
                     completionHandler(result_evt)
+                    return
                 }
+                
+                completionHandler(nil)
             }
         }
     }
     
     func DeleteEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.DeleteEvent)&lat=\(event.latitude)&long=\(event.longitude)"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.DeleteEvent)
+        requestBuilder.addAttrib(name: "lat",   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",  value: event.longitude)
         
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
-                    let statusCode = HTTPResponse.statusCode
-                    if statusCode != 200 {
-                        // error occured
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    guard data != nil else {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
-                        [String : String] else {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        if serverResponse["status"] == "error" {
                             if view != nil {
-                                UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                                let err = serverResponse["error"]!
+                                let errorMsg = "\(String(describing: err))"
+                                UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
                             }
                             completionHandler(false)
                             return
-                    }
-                    
-                    if server_response["status"] == "error" {
-                        if view != nil {
-                            let err = server_response["error"]!
-                            let errorMsg = "Error: \(String(describing: err))"
-                            UIUtils.showAlert(view: view!, title: "Failed to Create Event", message: errorMsg)
                         }
+                        
+                    }) == true) else {
                         completionHandler(false)
                         return
                     }
                     
                     completionHandler(true)
+                    return
                 }
+                
+                completionHandler(false)
             }
         }
     }
     
     func ModifyEvent(event: Event, view: UIViewController? = nil, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.ModifyEvent)&lat=\(event.latitude)&long=\(event.longitude)&event_title=\(event.title)&username=\(LoginManager.username)&address=\(event.address)&description=\(event.description)&start_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))&end_time=\(DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))&max_participants=\(String(event.maxParticipants))"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.ModifyEvent)
+        requestBuilder.addAttrib(name: "lat",                   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",                  value: event.longitude)
+        requestBuilder.addAttrib(name: "event_title",           value: event.title)
+        requestBuilder.addAttrib(name: "username",              value: LoginManager.username)
+        requestBuilder.addAttrib(name: "address",               value: event.address)
+        requestBuilder.addAttrib(name: "description",           value: event.description)
+        requestBuilder.addAttrib(name: "start_time",            value: DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.startTime))
+        requestBuilder.addAttrib(name: "end_time",              value: DateTimeUtils.getEventDateAndTimeDBCompatFormat(date: event.endTime))
+        requestBuilder.addAttrib(name: "max_participants",      value: event.maxParticipants)
         
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
-                    let statusCode = HTTPResponse.statusCode
-                    if statusCode != 200 {
-                        // error occured
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured while connecting to the server\nError Code: \(statusCode)")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    guard data != nil else {
-                        if view != nil {
-                            UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
-                        }
-                        completionHandler(false)
-                        return
-                    }
-                    
-                    guard let server_response = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as?
-                        [String : String] else {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        if serverResponse["status"] == "error" {
                             if view != nil {
-                                UIUtils.showAlert(view: view!, title: "Response Error", message: "Server response was corrupt")
+                                let err = serverResponse["error"]!
+                                let errorMsg = "\(String(describing: err))"
+                                UIUtils.showAlert(view: view!, title: "Failed to Modify Event", message: errorMsg)
                             }
                             completionHandler(false)
                             return
-                    }
-                    
-                    if server_response["status"] == "error" {
-                        if view != nil {
-                            let err = server_response["error"]!
-                            let errorMsg = "Error: \(String(describing: err))"
-                            UIUtils.showAlert(view: view!, title: "Failed to Modify Event", message: errorMsg)
                         }
+                        
+                    }) == true) else {
                         completionHandler(false)
                         return
                     }
                     
                     completionHandler(true)
+                    return
                 }
+                
+                completionHandler(false)
             }
         }
     }
     
-    func RetrieveEventsBasedOnFilter(view: UIViewController? = nil, eventOwner: String, completionHandler: @escaping (_ events: [Event]) -> Void) {
-        var retrievedEvents: [Event] = []
+    func RetrieveEventsBasedOnFilter(view: UIViewController? = nil, eventSearchFilter: EventSearchFilter, filter: String, completionHandler: @escaping (_ events: [Event]) -> Void) {
         
-        var postMsg = "servreq=\(EventServiceRequests.GetEventsBasedOnOwner)&username=\(eventOwner)"
-        postMsg = postMsg.replacingOccurrences(of: " ", with: "%20")
+        var requestBuilder = ServerRequestBuilder(servreq: "")
         
-        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: postMsg) { data, response, error in
+        if eventSearchFilter == .owner {
+            requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetEventsBasedOnOwner)
+            requestBuilder.addAttrib(name: "username",    value: filter)
+        }
+        
+        if eventSearchFilter == .title {
+            requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetEventsBasedOnTitle)
+            requestBuilder.addAttrib(name: "event_title", value: filter)
+        }
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
-                guard error == nil else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "Server Error", message: "Error occured when conneting to server")
-                    }
-                    completionHandler(retrievedEvents)
-                    return
-                }
+                var retrievedEvents: [Event] = []
                 
-                guard data != nil else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "Data Error", message: "No data was recieved from the server")
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [[String : Any]]) in
+                        
+                        for event in serverResponse {
+                            retrievedEvents.append(self.ParseEventData(event: event))
+                        }
+                        
+                    }) == true) else {
+                        completionHandler(retrievedEvents)
+                        return
                     }
-                    completionHandler(retrievedEvents)
-                    return
-                }
-                
-                guard let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [[String : Any]] else {
-                    if view != nil {
-                        UIUtils.showAlert(view: view!, title: "JSON Error", message: "Received data was corrupt")
-                    }
-                    completionHandler(retrievedEvents)
-                    return
-                }
-                
-                for event in json {
-                    retrievedEvents.append(self.ParseEventData(event: event))
                 }
                 
                 completionHandler(retrievedEvents)
+            }
+        }
+    }
+    
+    func SignUserUpForEvent(view: UIViewController? = nil, userToSignUp: String, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+        
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.JoinEvent)
+        requestBuilder.addAttrib(name: "lat",   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",  value: event.longitude)
+        requestBuilder.addAttrib(name: "user",  value: userToSignUp)
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        if serverResponse["status"] == "error" {
+                            if view != nil {
+                                let err = serverResponse["error"]!
+                                var errorMsg = "\(String(describing: err))"
+                                if err.contains("Duplicate entry") {
+                                    errorMsg = "You are already participating in this event"
+                                }
+                                UIUtils.showAlert(view: view!, title: "Error Joining Event", message: errorMsg)
+                            }
+                            completionHandler(false)
+                            return
+                        }
+                        
+                        completionHandler(true)
+                        return
+                        
+                    }) == true) else {
+                        completionHandler(false)
+                        return
+                    }
+                }
+                
+                completionHandler(false)
+            }
+        }
+    }
+    
+    func IsUserSignedUpForEvent(view: UIViewController? = nil, user: String, event: Event, completionHandler: @escaping (_ userSignedUp: Bool) -> Void) {
+        
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.IsUserInEvent)
+        requestBuilder.addAttrib(name: "lat",   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",  value: event.longitude)
+        requestBuilder.addAttrib(name: "user",  value: user)
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        let isUserSignedUp = Bool(serverResponse["result"] ?? "false") ?? false
+                        completionHandler(isUserSignedUp)
+                        return
+                        
+                    }) == true) else {
+                        completionHandler(false)
+                        return
+                    }
+                }
+                
+                completionHandler(false)
             }
         }
     }

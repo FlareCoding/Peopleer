@@ -10,6 +10,9 @@ import UIKit
 
 class EventEditorViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    // Button that either saves or updates the event
+    @IBOutlet weak var saveNavigationBarButton: UIBarButtonItem!
+    
     // Preserved copy of viewing mode from EventViewerViewController that specifies event viewing rights (Create, Edit, or View)
     var viewingMode = EventViewerViewControllerViewingMode.Edit
     
@@ -57,6 +60,13 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         // Update event start and end times with updated time from the passed event object
         eventStartTime  = event.startTime
         eventEndTime    = event.endTime
+        
+        // Save button will have different text depending on the viewing mode to either Create or Save an event
+        if viewingMode == .Edit {
+            saveNavigationBarButton.title = "Save"
+        } else if viewingMode == .Create {
+            saveNavigationBarButton.title = "Create"
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -231,7 +241,23 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var tableView: UITableView!
     
     @IBAction func SaveEventChanges_OnClick(_ sender: UIBarButtonItem) {
-        performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
+        // Either save changes of current event or create new one depending on the viewing mode
+        
+        let modifiedEvent = convertSettingsToEvent()
+        
+        if viewingMode == .Edit {
+            UIUtils.showConfirmAlert(view: self, title: "Updating Event", message: "Are you sure you want to update current event?") { result in
+                if result == true {
+                    self.UpdateEvent(event: modifiedEvent)
+                }
+            }
+        } else if viewingMode == .Create {
+            UIUtils.showConfirmAlert(view: self, title: "Creating Event", message: "Are you sure you want to create new event?") { result in
+                if result == true {
+                    self.CreateEvent(event: modifiedEvent)
+                }
+            }
+        }
     }
     
     @IBAction func CancelEventChanges_OnClick(_ sender: UIBarButtonItem) {
@@ -241,18 +267,20 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let vc = segue.destination as! EventViewerViewController
         
-        // Pass the preserved viewing mode state
-        vc.viewingMode = self.viewingMode
-        
         // Pass the preserved current identifier for the exit segue
         vc.exitSegueIdentifier = self.eventViewerExitSegueIndetifierCopy
         
         // If the user clicks "Save" button, then pass newly customized event object.
         // If the user clicks "Cancel" button, then pass the initial, unchanged copy of event.
         if segue.identifier == "saveEventChangesSegue" {
-            vc.event = convertSettingsToEvent()
+            vc.event = convertSettingsToEvent() // returns new Event object with saved changes
+            vc.viewingMode = .Edit
+            
         } else if segue.identifier == "cancelEventChangesSegue" {
             vc.event = self.event
+            
+            // Pass the preserved viewing mode state
+            vc.viewingMode = self.viewingMode
         }
     }
     
@@ -261,14 +289,18 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
             return (self.tableView.cellForRow(at: IndexPath(row: row, section: 0)) as! EventEditorTextBasedSettingsCell).inputTextfield
         }
         
-        event.title             = getRowTextfield(row: 0).text ?? "Title"
-        event.address           = getRowTextfield(row: 1).text ?? "Address"
-        event.description       = getRowTextfield(row: 2).text ?? "Description"
-        event.startTime         = eventStartTime
-        event.endTime           = eventEndTime
-        event.maxParticipants   = Int(getRowTextfield(row: 5).text ?? "0") ?? 0
+        var evt = Event()
+        evt.latitude = self.event.latitude
+        evt.longitude = self.event.longitude
         
-        return event
+        evt.title             = getRowTextfield(row: 0).text ?? "Title"
+        evt.address           = getRowTextfield(row: 1).text ?? "Address"
+        evt.description       = getRowTextfield(row: 2).text ?? "Description"
+        evt.startTime         = eventStartTime
+        evt.endTime           = eventEndTime
+        evt.maxParticipants   = Int(getRowTextfield(row: 5).text ?? "0") ?? 0
+        
+        return evt
     }
     
     func getEventDataAsTextForCellRow(row: Int, event: Event) -> String {
@@ -292,6 +324,28 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         return result
+    }
+    
+    private func CreateEvent(event: Event) {
+        // Sends a request to the database to create a new event based on the current event object
+        EventDataManager.shared.CreateNewEvent(view: self, event: event) { succeeded in
+            if succeeded {
+                UIUtils.showAlert(view: self, title: "Success", message: "Successfully created new event!") {
+                    self.performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
+                }
+            }
+        }
+    }
+    
+    private func UpdateEvent(event: Event) {
+        // Sends updated event information to the database and updates the event
+        EventDataManager.shared.ModifyEvent(event: event, view: self) { succeeded in
+            if succeeded {
+                UIUtils.showAlert(view: self, title: "Success", message: "Successfully updated event!") {
+                    self.performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
+                }
+            }
+        }
     }
 }
 

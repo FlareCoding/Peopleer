@@ -27,7 +27,6 @@ class EventViewerViewController: UIViewController {
     var exitSegueIdentifier = ""
     
     @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
-    @IBOutlet weak var updateEventNavigationBarButton: UIBarButtonItem!
     @IBOutlet weak var deleteEventNavigationBarButton: UIBarButtonItem!
     @IBOutlet weak var eventTitleLabel: UITextView!
     @IBOutlet weak var addressLabel: UITextView!
@@ -36,10 +35,15 @@ class EventViewerViewController: UIViewController {
     @IBOutlet weak var endTimeView: UITextView!
     @IBOutlet weak var currentParticipantCountView: UITextView!
     @IBOutlet weak var participantLimitCountView: UITextView!
+    @IBOutlet weak var joinEventButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.onViewDidLoad();
+    }
+    
+    func onViewDidLoad() {
         //
         // By default controls will be set only for viewing the event
         //
@@ -48,13 +52,22 @@ class EventViewerViewController: UIViewController {
         editEventNavigationBarButton.isEnabled = false
         editEventNavigationBarButton.title = ""
         
-        // Disable and hide "Create/Update" button
-        updateEventNavigationBarButton.isEnabled = false
-        updateEventNavigationBarButton.title = ""
-        
         // Disable and hide "Delete" button
         deleteEventNavigationBarButton.isEnabled = false
         deleteEventNavigationBarButton.title = ""
+        
+        // Show "Join Event" button only if viewing mode is "View" and if there is space for another participant
+        
+        if viewingMode == .View && (event.currentParticipants < event.maxParticipants) && (LoginManager.username != event.owner)  {
+            joinEventButton.isHidden = false
+        } else { joinEventButton.isHidden = true }
+        
+        // Check if user is already signed up for this event
+        EventDataManager.shared.IsUserSignedUpForEvent(view: self, user: LoginManager.username, event: self.event) { userSignedUp in
+            if userSignedUp {
+                self.joinEventButton.isHidden = true
+            }
+        }
         
         // Update UI controls based on the new event data
         eventTitleLabel.text                = event.title
@@ -70,9 +83,6 @@ class EventViewerViewController: UIViewController {
             editEventNavigationBarButton.title = "Edit"
             editEventNavigationBarButton.isEnabled = true
             
-            updateEventNavigationBarButton.title = "Update"
-            updateEventNavigationBarButton.isEnabled = true
-            
             deleteEventNavigationBarButton.title = "Delete"
             deleteEventNavigationBarButton.isEnabled = true
         }
@@ -81,9 +91,6 @@ class EventViewerViewController: UIViewController {
         if viewingMode == .Create {
             editEventNavigationBarButton.title = "Edit"
             editEventNavigationBarButton.isEnabled = true
-            
-            updateEventNavigationBarButton.title = "Create"
-            updateEventNavigationBarButton.isEnabled = true
         }
     }
     
@@ -116,66 +123,46 @@ class EventViewerViewController: UIViewController {
         self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
     }
     
-    @IBAction func UpdateEventButton_OnClick(_ sender: UIBarButtonItem) {
-        //
-        // Text on the "Update" button will display either "Update" if the event already exists or "Create" if the event has not been created yet.
-        // Depending on the current viewing mode (Create or Edit), event will be either updated or a request to create the event will be sent to the database.
-        //
-        
-        if viewingMode == .Create {
-            UIUtils.showConfirmAlert(view: self, title: "Creating Event", message: "Are you sure you want to create new event?") { result in
-                if result == true {
-                    self.CreateEvent()
-                }
-            }
-        }
-        else if viewingMode == .Edit {
-            UIUtils.showConfirmAlert(view: self, title: "Updating Event", message: "Are you sure you want to update current event?") { result in
-                if result == true {
-                    self.UpdateEvent()
-                }
-            }
-        }
-    }
-    
     @IBAction func DeleteEventButton_OnClick(_ sender: UIBarButtonItem) {
-        UIUtils.showConfirmAlert(view: self, title: "Deleting Event", message: "Are you sure you want to delete current event?") { result in
+        UIUtils.showConfirmAlert(view: self, title: "Deleting Event", message: "Are you sure you want to delete \"\(self.event.title)\"?") { result in
             if result == true {
                 self.DeleteEvent()
             }
         }
     }
-     
-    private func CreateEvent() {
-        // Sends a request to the database to create a new event based on the current event object
-        EventDataManager.shared.CreateNewEvent(view: self, event: event) { succeeded in
-            if succeeded {
-                UIUtils.showAlert(view: self, title: "Success", message: "Successfully created new event!") {
-                    self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
-                }
-            }
-        }
-    }
     
-    private func UpdateEvent() {
-        // Sends updated event information to the database and updates the event
-        EventDataManager.shared.ModifyEvent(event: event, view: self) { succeeded in
-            if succeeded {
-                UIUtils.showAlert(view: self, title: "Success", message: "Successfully updated event!") {
-                    self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
-                }
-            }
-        }
+    @IBAction func JoinEventButton_OnClick(_ sender: UIButton) {
+        JoinEvent()
     }
     
     private func DeleteEvent() {
         // Permanently deletes the event
         EventDataManager.shared.DeleteEvent(event: event, view: self) { succeeded in
             if succeeded {
-                UIUtils.showAlert(view: self, title: "Success", message: "Successfully deleted event!") {
+                UIUtils.showAlert(view: self, title: "Success", message: "Successfully deleted \"\(self.event.title)\"") {
                     self.performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
                 }
             }
+        }
+    }
+    
+    private func JoinEvent() {
+        // Signs the user up for a selected event
+        EventDataManager.shared.SignUserUpForEvent(view: self, userToSignUp: LoginManager.username, event: self.event) { succeeded in
+            if succeeded {
+                UIUtils.showAlert(view: self, title: "Success", message: "Successfully joined \"\(self.event.title)\"") {
+                    self.ReloadViewWithUpdatedEventInfo()
+                }
+            } else {
+                self.ReloadViewWithUpdatedEventInfo()
+            }
+        }
+    }
+    
+    private func ReloadViewWithUpdatedEventInfo() {
+        EventDataManager.shared.GetSpecificEvent(event: self.event) { updatedEvent in
+            self.event = updatedEvent ?? Event()
+            self.onViewDidLoad()
         }
     }
 }
