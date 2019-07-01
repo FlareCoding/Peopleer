@@ -15,6 +15,10 @@ if ($service_request == "get_all_events") {
     delete_event($connection);
 } else if ($service_request == "modify_event") {
     modify_event($connection);
+} else if ($service_request == "join_event") {
+    join_event($connection);
+} else if ($service_request == "is_user_in_event") {
+    is_user_in_event($connection);
 } else if ($service_request == "get_events_based_on_owner") {
     get_events_based_on_owner($connection);
 }

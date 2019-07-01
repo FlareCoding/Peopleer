@@ -31,6 +31,30 @@ function perform_query($connection, $query) {
     return $result;
 }
 
+function get_single_db_row($connection, $query) {
+    $result = Array();
+
+    $query_result = mysqli_query($connection, $query);
+    if (mysqli_num_rows($query_result) == 1) {
+        $result = mysqli_fetch_array($query_result);
+    }
+
+    return $result;
+}
+
+function get_listof_db_rows($connection, $query) {
+    $resultArray = array();
+
+    if ($result = mysqli_query($connection, $sql)) {
+        // Loop through each row in the result set
+        while($row = $result->fetch_object()) {
+            array_push($resultArray, $row);
+        }
+    }
+
+    return $resultArray;
+}
+
 function verify_user($connection, $username, $password) {
     $sql = "SELECT * FROM users WHERE username='$username'";
     $query_result = mysqli_query($connection, $sql);
@@ -109,6 +133,11 @@ function delete_event($connection) {
     $sql = "DELETE FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
     $result = perform_query($connection, $sql);
 
+    if ($result['status'] != 'error') {
+        $sql = "DELETE FROM event_participants WHERE latitude='$latitude' AND longitude='$longitude'";
+        perform_query($connection, $sql);
+    }
+
     header("Content-Type: application/json");
     echo json_encode($result);
 }
@@ -126,6 +155,52 @@ function modify_event($connection) {
 
     $sql = "UPDATE events SET title='$event_title', address='$address', description='$description', start_time='$start_time', end_time='$end_time', max_participants='$max_participants' WHERE (latitude, longitude) = ($latitude, $longitude) AND owner = '$username'";
     $result = perform_query($connection, $sql);
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
+}
+
+function join_event($connection) {
+    $latitude    = $_POST['lat'];
+    $longitude   = $_POST['long'];
+    $username    = $_POST['user'];
+    
+    $sql = "SELECT * FROM events WHERE (latitude, longitude) = ($latitude, $longitude)";
+    $event_db_obj = get_single_db_row($connection, $sql);
+
+    $current_participants = $event_db_obj['current_participants'];
+    $max_participants = $event_db_obj['max_participants'];
+
+    if ($current_participants < $max_participants) {
+        $sql = "INSERT INTO event_participants (latitude, longitude, user) VALUES ('$latitude', '$longitude', '$username')";
+        $result = perform_query($connection, $sql);
+        
+        if ($result['status'] != 'error') {
+            // If user successfully joined the event, increment event's participant count by 1
+            $sql = "UPDATE events SET current_participants = current_participants + 1 WHERE (latitude, longitude) = ($latitude, $longitude)";
+            $result = perform_query($connection, $sql);
+        }
+    } else {
+        $result = Array("status" => "error", "error" => "Participant limit exceeded");
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
+}
+
+function is_user_in_event($connection) {
+    $latitude    = $_POST['lat'];
+    $longitude   = $_POST['long'];
+    $username    = $_POST['user'];
+
+    $result = Array("result" => "false");
+
+    $sql = "SELECT * FROM event_participants WHERE (latitude, longitude, user) = ('$latitude', '$longitude', '$username')";
+    $query_result = mysqli_query($connection, $sql);
+
+    if (mysqli_num_rows($query_result) == 1) {
+        $result = Array("result" => "true");
+    }
 
     header("Content-Type: application/json");
     echo json_encode($result);
