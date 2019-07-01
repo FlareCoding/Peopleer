@@ -21,17 +21,17 @@ class ViewController: UIViewController {
     
     @IBAction func MyProfile_OnClick(_ sender: UIButton) {
         // Opens view controller displaying user profile
-        performSegue(withIdentifier: "openMyProfileSegue", sender: nil)
+        performSegue(withIdentifier: Segues.OpenMyProfile, sender: nil)
     }
     
     @IBAction func OpenMap_OnClick(_ sender: UIButton) {
         // Opens view controller displaying the main map
-        performSegue(withIdentifier: "openMapSegue", sender: self)
+        performSegue(withIdentifier: Segues.OpenMap, sender: self)
     }
     
     @IBAction func MyEvents_OnClick(_ sender: UIButton) {
         // Opens view controller displaying events created by the user
-        performSegue(withIdentifier: "viewMyEventsSegue", sender: self)
+        performSegue(withIdentifier: Segues.ViewMyEvents, sender: self)
     }
     
     @IBAction func LogoutButton_OnClick(_ sender: UIBarButtonItem) {
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
         }
         
         // Performs segue back to the login page
-        performSegue(withIdentifier: "logoutSegue", sender: self)
+        performSegue(withIdentifier: Segues.Logout, sender: self)
     }
 }
 

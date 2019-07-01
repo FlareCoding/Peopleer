@@ -138,11 +138,11 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
             if filterOptionsOpened {
                 if indexPath.row >= (filterOptionCount + 1) {
                     selectedEvent = myEvents[indexPath.row - 1 - filterOptionCount]
-                    performSegue(withIdentifier: "ViewEventSegue", sender: nil)
+                    performSegue(withIdentifier: Segues.ViewEvent, sender: nil)
                 }
             } else {
                 selectedEvent = myEvents[indexPath.row - 1]
-                performSegue(withIdentifier: "ViewEventSegue", sender: nil)
+                performSegue(withIdentifier: Segues.ViewEvent, sender: nil)
             }
         }
     }

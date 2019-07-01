@@ -10,6 +10,21 @@ import Foundation
 
 struct Segues {
     
-    static let ReturnToMapFromEventViewer = "returnToMapSegue"
+    // User segues
+    static let ReturnToLoginScreen          = "ReturnToLoginScreenSegue"
+    static let Logout                       = "logoutSegue"
+    static let OpenMyProfile                = "openMyProfileSegue"
+    static let OpenMainMenu                 = "OpenMainMenuSegue"
     
+    // Map segues
+    static let ReturnToMapFromEventViewer   = "returnToMapSegue"
+    static let OpenMap                      = "openMapSegue"
+    
+    // Event segues
+    static let ViewMyEvents                 = "viewMyEventsSegue"
+    static let ReturnToMyEvents             = "returnToMyEventsSegue"
+    static let ViewEvent                    = "ViewEventSegue"
+    static let EditEvent                    = "editEventSegue"
+    static let SaveEventChanges             = "saveEventChangesSegue"
+    static let CancelEventChanges           = "cancelEventChangesSegue"
 }

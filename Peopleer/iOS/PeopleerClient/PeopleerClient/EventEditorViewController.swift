@@ -261,7 +261,7 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     @IBAction func CancelEventChanges_OnClick(_ sender: UIBarButtonItem) {
-        performSegue(withIdentifier: "cancelEventChangesSegue", sender: nil)
+        performSegue(withIdentifier: Segues.CancelEventChanges, sender: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -331,7 +331,7 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         EventDataManager.shared.CreateNewEvent(view: self, event: event) { succeeded in
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully created new event!") {
-                    self.performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
+                    self.performSegue(withIdentifier: Segues.SaveEventChanges, sender: nil)
                 }
             }
         }
@@ -342,7 +342,7 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         EventDataManager.shared.ModifyEvent(event: event, view: self) { succeeded in
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully updated event!") {
-                    self.performSegue(withIdentifier: "saveEventChangesSegue", sender: nil)
+                    self.performSegue(withIdentifier: Segues.SaveEventChanges, sender: nil)
                 }
             }
         }
@@ -397,7 +397,6 @@ class EventEditorTimeBasedSettingsCell : UITableViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
         initializeCell()
     }
     

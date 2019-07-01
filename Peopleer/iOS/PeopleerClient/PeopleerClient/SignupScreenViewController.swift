@@ -45,7 +45,7 @@ class SignupScreenViewController: UIViewController, UITextFieldDelegate {
         LoginManager.SignupUser(username: usernameTextfield.text!, email: emailTextfield.text!, password: passwordTextfield.text!, view: self) { succeeded, error, errorString  in
             if (succeeded) {
                 UIUtils.showAlert(view: self, title: "Success", message: "You have successfully registered!") {
-                    self.performSegue(withIdentifier: "ReturnToLoginScreenSegue", sender: nil)
+                    self.performSegue(withIdentifier: Segues.ReturnToLoginScreen, sender: nil)
                 }
             }
             else {

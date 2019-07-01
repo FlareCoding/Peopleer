@@ -127,7 +127,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             eventViewingMode = .Create
             
             // Segueing to EventViewerViewController to view the event
-            performSegue(withIdentifier: "ViewEventSegue", sender: nil)
+            performSegue(withIdentifier: Segues.ViewEvent, sender: nil)
         }
     }
     
@@ -198,7 +198,7 @@ extension MapViewController : MKMapViewDelegate {
                 }
                 
                 // Segue over to the EventViewerViewController to display the selected event
-                self.performSegue(withIdentifier: "ViewEventSegue", sender: nil)
+                self.performSegue(withIdentifier: Segues.ViewEvent, sender: nil)
             }
         }
     }

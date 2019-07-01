@@ -68,7 +68,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                         ])
                 }
                 
-                self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
+                self.performSegue(withIdentifier: Segues.OpenMainMenu, sender: nil)
             }
             else if error != nil {
                 // Failed to connect to the server
@@ -98,7 +98,7 @@ class LoginScreenViewController: UIViewController, UITextFieldDelegate {
                     if succeeded {
                         LoginManager.username = usernameString
                         LoginManager.password = passwordString
-                        self.performSegue(withIdentifier: "OpenMainMenuSegue", sender: nil)
+                        self.performSegue(withIdentifier: Segues.OpenMainMenu, sender: nil)
                     }
                     else if error != nil {
                         UIUtils.showAlert(view: self, title: "Connection Failed", message: "Failed to connect to the server")
