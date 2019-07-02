@@ -228,4 +228,48 @@ function get_events_based_on_owner($connection) {
     echo json_encode($json_result);
 }
 
+function get_events_based_on_title($connection) {
+    $event_title =  $_POST['event_title'];
+
+    $sql = "SELECT * FROM events WHERE title = '$event_title'";
+    $query_result = mysqli_query($connection, $sql);
+
+    $json_result = array();
+
+    if ($result = mysqli_query($connection, $sql))
+    {
+        $json_result = array();
+    
+        while($row = $result->fetch_object())
+        {
+            array_push($json_result, $row);
+        }
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($json_result);
+}
+
+function get_events_based_on_participant_name($connection) {
+    $username =  $_POST['participant_name'];
+
+    $sql = "SELECT * FROM events AS e JOIN event_participants AS ep ON e.latitude = ep.latitude AND e.longitude = ep.longitude WHERE ep.user = '$username'";
+    $query_result = mysqli_query($connection, $sql);
+
+    $json_result = array();
+
+    if ($result = mysqli_query($connection, $sql))
+    {
+        $json_result = array();
+    
+        while($row = $result->fetch_object())
+        {
+            array_push($json_result, $row);
+        }
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($json_result);
+}
+
 ?>

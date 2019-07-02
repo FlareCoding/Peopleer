@@ -21,6 +21,10 @@ if ($service_request == "get_all_events") {
     is_user_in_event($connection);
 } else if ($service_request == "get_events_based_on_owner") {
     get_events_based_on_owner($connection);
+} else if ($service_request == "get_events_based_on_title") {
+    get_events_based_on_title($connection);
+} else if ($service_request == "get_events_based_on_participant_name") {
+    get_events_based_on_participant_name($connection);
 }
 
 close_db_connection($connection);
