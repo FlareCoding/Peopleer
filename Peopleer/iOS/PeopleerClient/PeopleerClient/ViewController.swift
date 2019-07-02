@@ -35,16 +35,20 @@ class ViewController: UIViewController {
     }
     
     @IBAction func LogoutButton_OnClick(_ sender: UIBarButtonItem) {
-        // Performs logout operation
-        let manager = CoreDataManager.shared
-        let objects = manager.retrieveObjects(entity: "RememberMe")
-        if objects != nil && objects!.count > 0 {
-            objects![0].setValue(false, forKey: "enabled") // disables the "remember me" option
-            _ = manager.saveContext()
+        UIUtils.showConfirmAlert(view: self, title: "Logout", message: "Are you sure you want to logout?") { result in
+            if (result) {
+                // Performs logout operation
+                let manager = CoreDataManager.shared
+                let objects = manager.retrieveObjects(entity: "RememberMe")
+                if objects != nil && objects!.count > 0 {
+                    objects![0].setValue(false, forKey: "enabled") // disables the "remember me" option
+                    _ = manager.saveContext()
+                }
+                
+                // Performs segue back to the login page
+                self.performSegue(withIdentifier: Segues.Logout, sender: self)
+            }
         }
-        
-        // Performs segue back to the login page
-        performSegue(withIdentifier: Segues.Logout, sender: self)
     }
 }
 

@@ -11,15 +11,22 @@ import UIKit
 class MyEventsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var eventCategorySegmentedControl: UISegmentedControl!
     
     // Manual cell row height
     let tableViewCellRowHeight: CGFloat = 76
     
-    // List of events to display
+    // List of displayable events
     var myEvents: [Event] = []
     
-    // Copy of initial list of events (used when resetting filters)
+    // Copy of initial list of displayable events
     var myEventsHardCopy: [Event] = []
+    
+    // List of user hosted events to display
+    var myHostedEvents: [Event] = []
+    
+    // List of user hosted joined to display
+    var myJoinedEvents: [Event] = []
     
     // Event object holding currently selected event
     var selectedEvent = Event()
@@ -30,18 +37,71 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
     // Number of filters (number of rows in a table view)
     var filterOptionCount = 1
     
+    // Current filter
+    var currentFilter = ""
+    
+    // Specifies which events to display
+    var currentEventCategory = "All"
+    
+    // Custom segmented control height
+    let kSegmentedControlHeight: CGFloat = 41
+    
+    override func viewDidLayoutSubviews() {
+        self.eventCategorySegmentedControl.frame = CGRect(x: eventCategorySegmentedControl.frame.origin.x, y: eventCategorySegmentedControl.frame.origin.y, width: eventCategorySegmentedControl.frame.width, height: kSegmentedControlHeight)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.eventCategorySegmentedControl.frame = CGRect(x: eventCategorySegmentedControl.frame.origin.x, y: eventCategorySegmentedControl.frame.origin.y, width: eventCategorySegmentedControl.frame.width, height: kSegmentedControlHeight)
+        
         // Fetch user events from the server
         EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .owner, filter: LoginManager.username) { events in
-            self.myEvents = events
-            self.myEventsHardCopy = events // saving a copy of all events
+            self.myHostedEvents = events
+        }
+        
+        EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .participantName, filter: LoginManager.username) { events in
+            self.myJoinedEvents = events
+            
+            self.myEvents           = self.myHostedEvents + self.myJoinedEvents
+            self.myEventsHardCopy   = self.myEvents
             self.tableView.reloadData()
         }
     }
     
+    @IBAction func EventCategory_SegmentChanged(_ sender: UISegmentedControl) {
+        let category = sender.titleForSegment(at: sender.selectedSegmentIndex)
+        self.currentEventCategory = category ?? "All"
+        
+        if category == "All" {
+            myEvents = myEventsHardCopy
+        } else if category == "Hosting" {
+            myEvents = myHostedEvents
+        } else if category == "Joined" {
+            myEvents = myJoinedEvents
+        }
+        
+        // Apply the filter to events from a new category
+        if !currentFilter.isEmpty {
+            var filteredEvents: [Event] = []
+            
+            // Loop through all currently displayable events and pick out the ones that match the specified filter
+            for event in myEvents {
+                if event.title.contains(currentFilter) {
+                    filteredEvents.append(event)
+                }
+            }
+            
+            myEvents = filteredEvents
+        }
+        
+        tableView.reloadData()
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // update global copy of the filter
+        self.currentFilter = searchBar.text ?? ""
+        
         // If no filter is set, set current event list to the initial unchanged copy of all events
         if searchBar.text!.isEmpty {
             myEvents = myEventsHardCopy
@@ -49,9 +109,18 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
             return
         }
         
+        // reset myEvents based on the current category
+        if currentEventCategory == "All" {
+            myEvents = myEventsHardCopy
+        } else if currentEventCategory == "Hosting" {
+            myEvents = myHostedEvents
+        } else if currentEventCategory == "Joined" {
+            myEvents = myJoinedEvents
+        }
+        
         var filteredEvents: [Event] = []
         
-        // Loop through all initially-receieved events and pick out the ones that match the specified filter
+        // Loop through all currently displayable events and pick out the ones that match the specified filter
         for event in myEventsHardCopy {
             if event.title.contains(searchBar.text!) {
                 filteredEvents.append(event)
@@ -60,6 +129,10 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
         
         myEvents = filteredEvents
         tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -104,6 +177,12 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
                     // If filter options are closed, dequeue normal event cells
                     cell = tableView.dequeueReusableCell(withIdentifier: "eventCell")!
                     (cell as! EventCell).eventTitle.text = myEvents[indexPath.row - 1].title
+                    (cell as! EventCell).eventImage.image = UIImage(named: "eventsIcon")
+                    
+                    // set event icon to blue icon if the user is participating in that event
+                    if myEvents[indexPath.row - 1].owner != LoginManager.username {
+                        (cell as! EventCell).eventImage.image = UIImage(named: "blueEventsIcon")
+                    }
                 }
             }
             else if indexPath.row >= (filterOptionCount + 1) {
@@ -114,6 +193,12 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
                     offset = 1 + filterOptionCount
                 }
                 (cell as! EventCell).eventTitle.text = myEvents[indexPath.row - offset].title
+                (cell as! EventCell).eventImage.image = UIImage(named: "eventsIcon")
+                
+                // set event icon to blue icon if the user is participating in that event
+                if myEvents[indexPath.row - offset].owner != LoginManager.username {
+                    (cell as! EventCell).eventImage.image = UIImage(named: "blueEventsIcon")
+                }
             }
         }
         
@@ -155,7 +240,11 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
             vc.event = selectedEvent
             
             // Pass the preserved viewing mode state
-            vc.viewingMode = .Edit
+            if selectedEvent.owner != LoginManager.username {
+                vc.viewingMode = .View
+            } else {
+                vc.viewingMode = .Edit
+            }
             
             // Pass the preserved current identifier for the exit segue
             vc.exitSegueIdentifier = "returnToMyEventsSegue"

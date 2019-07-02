@@ -12,6 +12,7 @@ import UIKit
 enum EventSearchFilter {
     case owner
     case title
+    case participantName
 }
 
 class EventDataManager {
@@ -28,8 +29,9 @@ class EventDataManager {
         static let ModifyEvent          = "modify_event"
         static let JoinEvent            = "join_event"
         static let IsUserInEvent        = "is_user_in_event"
-        static let GetEventsBasedOnOwner = "get_events_based_on_owner"
-        static let GetEventsBasedOnTitle = "get_events_based_on_title"
+        static let GetEventsBasedOnOwner            = "get_events_based_on_owner"
+        static let GetEventsBasedOnTitle            = "get_events_based_on_title"
+        static let GetEventsBasedOnParticipantName  = "get_events_based_on_participant_name"
     }
     
     private func ParseEventData(event: [String : Any]) -> Event {
@@ -249,6 +251,11 @@ class EventDataManager {
         if eventSearchFilter == .title {
             requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetEventsBasedOnTitle)
             requestBuilder.addAttrib(name: "event_title", value: filter)
+        }
+        
+        if eventSearchFilter == .participantName {
+            requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.GetEventsBasedOnParticipantName)
+            requestBuilder.addAttrib(name: "participant_name", value: filter)
         }
         
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in

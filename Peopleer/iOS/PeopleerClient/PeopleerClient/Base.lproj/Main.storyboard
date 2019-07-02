@@ -478,7 +478,7 @@
                                 </items>
                             </navigationBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="KaK-c4-QYc">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="135" width="414" height="761"/>
                                 <color key="backgroundColor" red="0.105123706" green="0.24753182879999999" blue="0.52926565449999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -558,6 +558,17 @@
                                     <outlet property="delegate" destination="gaH-Oc-JOX" id="4wV-o4-5VT"/>
                                 </connections>
                             </tableView>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="lNx-Q3-TGw">
+                                <rect key="frame" x="0.0" y="88" width="414" height="29"/>
+                                <segments>
+                                    <segment title="All"/>
+                                    <segment title="Hosting"/>
+                                    <segment title="Joined"/>
+                                </segments>
+                                <connections>
+                                    <action selector="EventCategory_SegmentChanged:" destination="gaH-Oc-JOX" eventType="valueChanged" id="0J7-8F-4yF"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.105123706" green="0.24753182879999999" blue="0.52926565449999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -565,13 +576,18 @@
                             <constraint firstAttribute="bottom" secondItem="KaK-c4-QYc" secondAttribute="bottom" id="Eog-ye-l8S"/>
                             <constraint firstItem="Wlb-WM-kYM" firstAttribute="top" secondItem="RO1-vE-4ZB" secondAttribute="top" id="Gd7-t0-HWH"/>
                             <constraint firstItem="Wlb-WM-kYM" firstAttribute="leading" secondItem="KaK-c4-QYc" secondAttribute="leading" id="OfO-QY-Huq"/>
-                            <constraint firstItem="KaK-c4-QYc" firstAttribute="top" secondItem="Wlb-WM-kYM" secondAttribute="bottom" id="nzd-CJ-FLw"/>
+                            <constraint firstItem="lNx-Q3-TGw" firstAttribute="trailing" secondItem="RO1-vE-4ZB" secondAttribute="trailing" id="RjE-bm-ml0"/>
+                            <constraint firstItem="lNx-Q3-TGw" firstAttribute="leading" secondItem="RO1-vE-4ZB" secondAttribute="leading" id="cdh-Jc-Pdp"/>
+                            <constraint firstItem="KaK-c4-QYc" firstAttribute="top" secondItem="Wlb-WM-kYM" secondAttribute="bottom" constant="47" id="nzd-CJ-FLw"/>
+                            <constraint firstItem="KaK-c4-QYc" firstAttribute="top" secondItem="lNx-Q3-TGw" secondAttribute="bottom" constant="19" id="qQN-Ua-tdM"/>
+                            <constraint firstItem="lNx-Q3-TGw" firstAttribute="top" secondItem="Wlb-WM-kYM" secondAttribute="bottom" id="qXF-Un-Uel"/>
                             <constraint firstItem="Wlb-WM-kYM" firstAttribute="leading" secondItem="7Gh-Yv-bOY" secondAttribute="leading" id="x5E-fL-MDG"/>
                             <constraint firstItem="Wlb-WM-kYM" firstAttribute="trailing" secondItem="KaK-c4-QYc" secondAttribute="trailing" id="zal-ei-wQ1"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="RO1-vE-4ZB"/>
                     </view>
                     <connections>
+                        <outlet property="eventCategorySegmentedControl" destination="lNx-Q3-TGw" id="x95-eN-CJy"/>
                         <outlet property="tableView" destination="KaK-c4-QYc" id="RHD-Jo-amg"/>
                         <segue destination="f9Y-yC-Phm" kind="show" identifier="ViewEventSegue" id="mQt-X9-9VQ"/>
                     </connections>
@@ -735,7 +751,7 @@
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                     </textView>
                                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Located at:" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="gpW-mF-3dW">
-                                                        <rect key="frame" x="8" y="133" width="398" height="79"/>
+                                                        <rect key="frame" x="8" y="133" width="319" height="79"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="79" id="Nf2-sX-khs"/>
                                                         </constraints>
@@ -744,16 +760,37 @@
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                         <dataDetectorType key="dataDetectorTypes" address="YES"/>
                                                     </textView>
+                                                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="approvedCheckmarkIcon" translatesAutoresizingMaskIntoConstraints="NO" id="El7-7E-9wK">
+                                                        <rect key="frame" x="354" y="133" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="73Y-gl-rdH"/>
+                                                            <constraint firstAttribute="width" constant="30" id="aKF-gN-N4B"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Signed Up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bjt-I2-orP">
+                                                        <rect key="frame" x="338" y="171" width="68" height="17"/>
+                                                        <fontDescription key="fontDescription" name="GillSans-SemiBold" family="Gill Sans" pointSize="14"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" red="0.105123706" green="0.24753182879999999" blue="0.52926565449999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstItem="gpW-mF-3dW" firstAttribute="top" secondItem="0du-12-cfd" secondAttribute="bottom" constant="17" id="0GO-rR-9FR"/>
                                                     <constraint firstItem="0du-12-cfd" firstAttribute="leading" secondItem="WfN-Sk-lvC" secondAttribute="leading" id="97U-wu-vky"/>
+                                                    <constraint firstItem="bjt-I2-orP" firstAttribute="leading" secondItem="gpW-mF-3dW" secondAttribute="trailing" constant="11" id="AQz-qF-Jxy"/>
                                                     <constraint firstItem="gpW-mF-3dW" firstAttribute="leading" secondItem="WfN-Sk-lvC" secondAttribute="leadingMargin" id="Am5-fO-7J9"/>
                                                     <constraint firstAttribute="trailing" secondItem="0du-12-cfd" secondAttribute="trailing" id="LSL-25-CyW"/>
+                                                    <constraint firstAttribute="trailing" secondItem="El7-7E-9wK" secondAttribute="trailing" constant="30" id="MwQ-xL-Lim"/>
+                                                    <constraint firstAttribute="bottom" secondItem="El7-7E-9wK" secondAttribute="bottom" constant="57" id="aBJ-s7-AMp"/>
+                                                    <constraint firstAttribute="trailing" secondItem="bjt-I2-orP" secondAttribute="trailing" constant="8" id="bQn-rt-5IG"/>
+                                                    <constraint firstItem="El7-7E-9wK" firstAttribute="top" secondItem="0du-12-cfd" secondAttribute="bottom" constant="17" id="bbc-WI-sOH"/>
                                                     <constraint firstItem="gpW-mF-3dW" firstAttribute="bottom" secondItem="WfN-Sk-lvC" secondAttribute="bottomMargin" id="biu-Uc-Stx"/>
                                                     <constraint firstItem="0du-12-cfd" firstAttribute="top" secondItem="WfN-Sk-lvC" secondAttribute="top" constant="33" id="cRg-Bo-09Y"/>
-                                                    <constraint firstItem="0du-12-cfd" firstAttribute="centerX" secondItem="gpW-mF-3dW" secondAttribute="centerX" id="fpc-h7-PZM"/>
+                                                    <constraint firstItem="0du-12-cfd" firstAttribute="centerX" secondItem="gpW-mF-3dW" secondAttribute="centerX" constant="39.5" id="fpc-h7-PZM"/>
+                                                    <constraint firstAttribute="bottom" secondItem="bjt-I2-orP" secondAttribute="bottom" constant="32" id="qga-cd-IRM"/>
+                                                    <constraint firstItem="bjt-I2-orP" firstAttribute="top" secondItem="El7-7E-9wK" secondAttribute="bottom" constant="8" id="z50-tF-Y22"/>
+                                                    <constraint firstItem="El7-7E-9wK" firstAttribute="leading" secondItem="gpW-mF-3dW" secondAttribute="trailing" constant="27" id="zOm-jm-BYG"/>
                                                 </constraints>
                                             </view>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Event Description" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="0Lf-AW-Wt2">
@@ -936,6 +973,8 @@
                         <outlet property="eventTitleLabel" destination="0du-12-cfd" id="vwj-GN-Lq0"/>
                         <outlet property="joinEventButton" destination="7xT-L4-Xx1" id="dCr-iy-xM8"/>
                         <outlet property="participantLimitCountView" destination="MKP-Br-AJd" id="pjl-7I-vf7"/>
+                        <outlet property="signedUpCheckmarkImage" destination="El7-7E-9wK" id="UKb-iR-sVd"/>
+                        <outlet property="signedUpDisplayLabel" destination="bjt-I2-orP" id="D4H-jY-SiS"/>
                         <outlet property="startTimeView" destination="h91-Sr-s3n" id="XVF-uO-sSe"/>
                         <segue destination="gaH-Oc-JOX" kind="presentation" identifier="returnToMyEventsSegue" modalTransitionStyle="crossDissolve" id="9JS-hU-TCw"/>
                         <segue destination="ah5-am-o46" kind="presentation" identifier="returnToMapSegue" modalTransitionStyle="crossDissolve" id="tPw-p6-78s"/>
@@ -1051,6 +1090,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="approvedCheckmarkIcon" width="512" height="512"/>
         <image name="eventsIcon" width="256" height="256"/>
         <image name="mapIcon" width="512" height="512"/>
         <image name="profileIcon" width="512" height="512"/>
@@ -1058,9 +1098,9 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="mQt-X9-9VQ"/>
-        <segue reference="Io5-Vm-L5P"/>
+        <segue reference="tPw-p6-78s"/>
         <segue reference="9JS-hU-TCw"/>
-        <segue reference="nCr-1C-kNR"/>
-        <segue reference="xe5-Cu-dQk"/>
+        <segue reference="sF7-Is-9Ed"/>
+        <segue reference="tQp-QE-wWZ"/>
     </inferredMetricsTieBreakers>
 </document>

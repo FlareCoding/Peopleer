@@ -36,6 +36,8 @@ class EventViewerViewController: UIViewController {
     @IBOutlet weak var currentParticipantCountView: UITextView!
     @IBOutlet weak var participantLimitCountView: UITextView!
     @IBOutlet weak var joinEventButton: UIButton!
+    @IBOutlet weak var signedUpCheckmarkImage: UIImageView!
+    @IBOutlet weak var signedUpDisplayLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +68,8 @@ class EventViewerViewController: UIViewController {
         EventDataManager.shared.IsUserSignedUpForEvent(view: self, user: LoginManager.username, event: self.event) { userSignedUp in
             if userSignedUp {
                 self.joinEventButton.isHidden = true
+                self.signedUpCheckmarkImage.isHidden = false
+                self.signedUpDisplayLabel.isHidden = false
             }
         }
         
