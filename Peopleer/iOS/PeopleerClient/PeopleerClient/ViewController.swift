@@ -50,5 +50,12 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == Segues.OpenMyProfile {
+            let vc = segue.destination as! UserProfileViewController
+            vc.user = LoginManager.userObject
+        }
+    }
 }
 

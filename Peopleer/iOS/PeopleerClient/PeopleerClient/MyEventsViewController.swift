@@ -58,14 +58,14 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
         // Fetch user events from the server
         EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .owner, filter: LoginManager.username) { events in
             self.myHostedEvents = events
-        }
-        
-        EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .participantName, filter: LoginManager.username) { events in
-            self.myJoinedEvents = events
             
-            self.myEvents           = self.myHostedEvents + self.myJoinedEvents
-            self.myEventsHardCopy   = self.myEvents
-            self.tableView.reloadData()
+            EventDataManager.shared.RetrieveEventsBasedOnFilter(view: self, eventSearchFilter: .participantName, filter: LoginManager.username) { events in
+                self.myJoinedEvents = events
+                
+                self.myEvents           = self.myHostedEvents + self.myJoinedEvents
+                self.myEventsHardCopy   = self.myEvents
+                self.tableView.reloadData()
+            }
         }
     }
     
@@ -233,7 +233,7 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ViewEventSegue" {
+        if segue.identifier == Segues.ViewEvent {
             let vc = segue.destination as! EventViewerViewController
             
             // Pass the copy of the event object
@@ -247,7 +247,7 @@ class MyEventsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             // Pass the preserved current identifier for the exit segue
-            vc.exitSegueIdentifier = "returnToMyEventsSegue"
+            vc.exitSegueIdentifier = Segues.ReturnToMyEvents
         }
     }
 }

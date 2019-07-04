@@ -272,11 +272,11 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         
         // If the user clicks "Save" button, then pass newly customized event object.
         // If the user clicks "Cancel" button, then pass the initial, unchanged copy of event.
-        if segue.identifier == "saveEventChangesSegue" {
+        if segue.identifier == Segues.SaveEventChanges {
             vc.event = convertSettingsToEvent() // returns new Event object with saved changes
             vc.viewingMode = .Edit
             
-        } else if segue.identifier == "cancelEventChangesSegue" {
+        } else if segue.identifier == Segues.CancelEventChanges {
             vc.event = self.event
             
             // Pass the preserved viewing mode state

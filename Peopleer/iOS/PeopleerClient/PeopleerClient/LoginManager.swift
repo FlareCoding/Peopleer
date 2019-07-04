@@ -8,18 +8,12 @@
 
 import UIKit
 
-struct User {
-    var username    = "Error"
-    var country     = "Error"
-    var city        = "Error"
-    var hoursVolunteered = 0
-    var impact = 0
-}
-
 class LoginManager {
     
     static var username = ""
     static var password = ""
+    
+    static var userObject = User()
     
     static private func validateEmail(email: String) -> Bool {
         
@@ -35,7 +29,7 @@ class LoginManager {
         requestBuilder.addAttrib(name: "username", value: username)
         requestBuilder.addAttrib(name: "password", value: password.sha256())
         
-        NetworkManager.shared.postRequest(url: LOGIN_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+        NetworkManager.shared.postRequest(url: LOGIN_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
                     guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
@@ -50,6 +44,14 @@ class LoginManager {
                         }
                         
                         completionHandler(true, error)
+                        
+                        // update global user struct object
+                        UserDataManager.shared.GetUserInformation(view: view, username: username) { user in
+                            if user != nil {
+                                userObject = user!
+                            }
+                        }
+                        
                         return
                         
                     }) == true) else {
@@ -63,15 +65,20 @@ class LoginManager {
         }
     }
     
-    static func SignupUser(username: String, email: String, password: String, view: UIViewController? = nil, completionHandler: @escaping
+    static func SignupUser(view: UIViewController? = nil, user: User, password: String, completionHandler: @escaping
         (_ succeeded: Bool, _ error: Error?, _ errorString: String?) -> Void) {
         
         let requestBuilder = ServerRequestBuilder(servreq: "signup")
-        requestBuilder.addAttrib(name: "username", value: username)
-        requestBuilder.addAttrib(name: "email",    value: email)
+        requestBuilder.addAttrib(name: "username", value: user.username)
+        requestBuilder.addAttrib(name: "displayed_name", value: user.displayedName)
+        requestBuilder.addAttrib(name: "email",    value: user.email)
+        requestBuilder.addAttrib(name: "country",  value: user.country)
+        requestBuilder.addAttrib(name: "city",     value: user.city)
+        requestBuilder.addAttrib(name: "hours_volunteered", value: user.hoursVolunteered)
+        requestBuilder.addAttrib(name: "impact",   value: user.impact)
         requestBuilder.addAttrib(name: "password", value: password.sha256())
         
-        NetworkManager.shared.postRequest(url: LOGIN_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+        NetworkManager.shared.postRequest(url: LOGIN_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
                     guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
@@ -83,9 +90,11 @@ class LoginManager {
                             if err.contains("Duplicate entry") {
                                 errorMsg = "Username taken"
                             }
+                            
                             if view != nil {
                                 UIUtils.showAlert(view: view!, title: "Registration Failed", message: errorMsg)
                             }
+                            
                             completionHandler(false, error, errorMsg)
                             return
                         }

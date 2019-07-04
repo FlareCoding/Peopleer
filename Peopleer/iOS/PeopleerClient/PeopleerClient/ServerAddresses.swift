@@ -9,4 +9,5 @@
 import Foundation
 
 let EVENTS_SERVICE_URL   = "http://100.38.103.124:8000/peopleer_events_service.php"
-let LOGIN_URL            = "http://100.38.103.124:8000/peopleer_login_service.php"
+let LOGIN_SERVICE_URL            = "http://100.38.103.124:8000/peopleer_login_service.php"
+let USER_SERVICE_URL     = "http://100.38.103.124:8000/peopleer_user_service.php"

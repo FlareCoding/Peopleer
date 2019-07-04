@@ -26,6 +26,9 @@ class EventViewerViewController: UIViewController {
     // Specifies which segue to use when exiting the view controller
     var exitSegueIdentifier = ""
     
+    // Preserves a user object if the segue to this view controller was called from a user profile
+    var preservedUserObject = User()
+    
     @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
     @IBOutlet weak var deleteEventNavigationBarButton: UIBarButtonItem!
     @IBOutlet weak var eventTitleLabel: UITextView!
@@ -100,7 +103,7 @@ class EventViewerViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // If the user presses "Edit" button and goes to the event editing screen
-        if segue.identifier == "editEventSegue" {
+        if segue.identifier == Segues.EditEvent {
             let vc = segue.destination as! EventEditorViewController
             
             // Preserve a copy of current viewing mode state
@@ -114,11 +117,19 @@ class EventViewerViewController: UIViewController {
         }
         
         // If the user returns to the map
-        if segue.identifier == "returnToMapSegue" {
+        if segue.identifier == Segues.ReturnToMapFromEventViewer {
             let vc = segue.destination as! MapViewController
             
             // Set focus point of the map to event's location
             vc.initialMapPosition = CLLocation(latitude: self.event.latitude, longitude: self.event.longitude)
+        }
+        
+        // If the user returns to UserProfileViewController
+        if segue.identifier == Segues.ReturnToUserProfile {
+            let vc = segue.destination as! UserProfileViewController
+            
+            // Set user object of the profile to the preserved copy passed here beforehand
+            vc.user = preservedUserObject
         }
     }
     

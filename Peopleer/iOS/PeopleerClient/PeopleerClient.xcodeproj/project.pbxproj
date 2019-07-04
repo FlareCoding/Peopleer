@@ -32,6 +32,8 @@
 		6CF6155A22AC639000D0F8C0 /* MyEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF6155922AC639000D0F8C0 /* MyEventsViewController.swift */; };
 		6CF6155C22ADDF4E00D0F8C0 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF6155B22ADDF4E00D0F8C0 /* UserProfileViewController.swift */; };
 		6CF88D7222C2F4210056B26C /* Segues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF88D7122C2F4210056B26C /* Segues.swift */; };
+		6CFE24B422CD172E00FA273A /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CFE24B322CD172E00FA273A /* UserDataManager.swift */; };
+		6CFE24B622CD230700FA273A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CFE24B522CD230700FA273A /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +65,8 @@
 		6CF6155922AC639000D0F8C0 /* MyEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyEventsViewController.swift; sourceTree = "<group>"; };
 		6CF6155B22ADDF4E00D0F8C0 /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		6CF88D7122C2F4210056B26C /* Segues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segues.swift; sourceTree = "<group>"; };
+		6CFE24B322CD172E00FA273A /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
+		6CFE24B522CD230700FA273A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,11 +118,13 @@
 				6C3AD039226D4C9300CA8413 /* Info.plist */,
 				6C3AD031226D4C9100CA8413 /* PeopleerClient.xcdatamodeld */,
 				6C05A340229AF343002CE7BD /* Event.swift */,
+				6CFE24B522CD230700FA273A /* User.swift */,
 				6C05A343229B337C002CE7BD /* DateTimeUtils.swift */,
 				6C7F9E372277AD4D00325215 /* UIUtils.swift */,
 				6C7F9E3522779B1500325215 /* NetworkManager.swift */,
 				6C649A87229C88DA00A78D01 /* CoreDataManager.swift */,
 				6C6D1D0822725B690099BA2E /* EventDataManager.swift */,
+				6CFE24B322CD172E00FA273A /* UserDataManager.swift */,
 				6C52935622866B9F00BEDE43 /* LoginManager.swift */,
 				6C8A7734228379C9006A723D /* PeopleerClient-Bridging-Header.h */,
 				6CD4A6D3229DF87B0094323D /* ServerAddresses.swift */,
@@ -215,11 +221,13 @@
 				6C05A33D229AEB1D002CE7BD /* Extensions.swift in Sources */,
 				6CF6155A22AC639000D0F8C0 /* MyEventsViewController.swift in Sources */,
 				6C5293592287BBF200BEDE43 /* SignupScreenViewController.swift in Sources */,
+				6CFE24B422CD172E00FA273A /* UserDataManager.swift in Sources */,
 				6C05A344229B337C002CE7BD /* DateTimeUtils.swift in Sources */,
 				6C3AD033226D4C9100CA8413 /* PeopleerClient.xcdatamodeld in Sources */,
 				6C8A7731228353E4006A723D /* LoginScreenViewController.swift in Sources */,
 				6C7F9E382277AD4D00325215 /* UIUtils.swift in Sources */,
 				6CD4A6D4229DF87B0094323D /* ServerAddresses.swift in Sources */,
+				6CFE24B622CD230700FA273A /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

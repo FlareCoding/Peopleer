@@ -133,7 +133,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Check for specific segue identifiers
-        if segue.identifier == "ViewEventSegue" {
+        if segue.identifier == Segues.ViewEvent {
             guard let eventViewerViewController = segue.destination as? EventViewerViewController else { return }
             
             // Set proper event data
@@ -143,7 +143,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             eventViewerViewController.viewingMode = eventViewingMode
             
             // Sets the returning segue identifier
-            eventViewerViewController.exitSegueIdentifier = "returnToMapSegue"
+            eventViewerViewController.exitSegueIdentifier = Segues.ReturnToMapFromEventViewer
         }
     }
 }
