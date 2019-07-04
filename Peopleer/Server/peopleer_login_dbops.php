@@ -42,11 +42,16 @@ function login_user($connection) {
 }
 
 function signup_user($connection) {
-    $username = $_POST['username'];
-    $email    = $_POST['email'];
-    $password = $_POST['password'];
+    $username           = $_POST['username'];
+    $displayed_name     = $_POST['displayed_name'];
+    $email              = $_POST['email'];
+    $country            = $_POST['country'];
+    $city               = $_POST['city'];
+    $hours_volunteered  = $_POST['hours_volunteered'];
+    $impact             = $_POST['impact'];
+    $password           = $_POST['password'];
     
-    $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+    $sql = "INSERT INTO users (username, password, displayed_name, email, country, city, hours_volunteered, impact) VALUES ('$username', '$password', '$displayed_name', '$email', '$country', '$city', '$hours_volunteered', '$impact')";
     $result = Array();
 
     if (mysqli_query($connection, $sql)) {
