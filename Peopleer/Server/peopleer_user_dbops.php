@@ -71,4 +71,26 @@ function get_user_info($connection) {
     echo json_encode($result);
 }
 
+function get_event_participants($connection) {
+    $latitude    = $_POST['lat'];
+    $longitude   = $_POST['long'];
+
+    $sql = "SELECT * FROM users AS u JOIN event_participants AS ep ON u.username = ep.user WHERE ep.latitude = '$latitude' AND ep.longitude = '$longitude'";
+    
+    $json_result = array();
+
+    if ($result = mysqli_query($connection, $sql))
+    {
+        $json_result = array();
+    
+        while($row = $result->fetch_object())
+        {
+            array_push($json_result, $row);
+        }
+    }
+
+    header("Content-Type: application/json");
+    echo json_encode($json_result);
+}
+
 ?>

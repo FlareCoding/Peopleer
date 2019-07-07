@@ -188,6 +188,24 @@ function join_event($connection) {
     echo json_encode($result);
 }
 
+function leave_event($connection) {
+    $latitude    = $_POST['lat'];
+    $longitude   = $_POST['long'];
+    $username    = $_POST['user'];
+    
+    $sql = "DELETE FROM event_participants WHERE (latitude, longitude, user) = ($latitude, $longitude, '$username')";
+    $result = perform_query($connection, $sql);
+
+    if ($result['status'] != 'error') {
+        // If user successfully left the event, decrement event's participant count by 1
+        $sql = "UPDATE events SET current_participants = current_participants - 1 WHERE (latitude, longitude) = ($latitude, $longitude)";
+        $result = perform_query($connection, $sql);
+    } 
+
+    header("Content-Type: application/json");
+    echo json_encode($result);
+}
+
 function is_user_in_event($connection) {
     $latitude    = $_POST['lat'];
     $longitude   = $_POST['long'];
@@ -210,7 +228,6 @@ function get_events_based_on_owner($connection) {
     $username = $_POST['username'];
 
     $sql = "SELECT * FROM events WHERE owner = '$username'";
-    $query_result = mysqli_query($connection, $sql);
 
     $json_result = array();
 
