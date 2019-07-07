@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 import CoreLocation
 
 enum EventViewerViewControllerViewingMode {
@@ -15,10 +16,11 @@ enum EventViewerViewControllerViewingMode {
     case View
 }
 
-class EventViewerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class EventViewerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
 
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var eventParticipantsTableView: UITableView!
+    @IBOutlet weak var mapView: MKMapView!
     
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
@@ -32,6 +34,7 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var eventDescriptionTextView: UITextView!
     @IBOutlet weak var eventStartTimeTextView: UITextView!
     @IBOutlet weak var eventEndTimeTextView: UITextView!
+    @IBOutlet weak var eventAddressTextView: UITextView!
     
     // Event object to hold current event data
     var event = Event()
@@ -51,10 +54,17 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
     // Holds user object that was selected in a table view
     private var selectedUser = User()
     
+    // Instance of location manager for utilizing iOS location services
+    private var locationManager: CLLocationManager!
+    
+    // Event owner displayable name rather than raw username
+    private var ownerDisplayableName = ""
+    
     //****************** Constants ******************//
     let kStartTimeLabelStartingText = "Start Time:       "
     let kEndTimeLabelStartingText   = "End Time:         "
     let kParticipantsTableViewRowHeight: CGFloat = 44.0
+    let kMapZoomLevel = 1400
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +79,26 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
         })
     }
     
+    func setupMapView() {
+        removeAllAnnotations()
+        
+        createLocationManager()
+        setMapZoomLevel()
+        createEventLocationAnnotation()
+    }
+    
+    func getOwnerDisplayableName() {
+        UserDataManager.shared.GetUserInformation(view: self, username: event.owner) { (user) in
+            if user != nil {
+                self.ownerDisplayableName = user!.displayedName
+            }
+        }
+    }
+    
     func onViewDidLoad() {
+        
+        // Set up map view
+        setupMapView()
         
         // Remove all already-existing sublayers from image view
         eventHeaderBackgroundImageView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
@@ -124,6 +153,7 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
         eventDescriptionTextView.text           = event.description
         eventStartTimeTextView.text             = kStartTimeLabelStartingText + DateTimeUtils.getEventDateAndTime(date: event.startTime)
         eventEndTimeTextView.text               = kEndTimeLabelStartingText   + DateTimeUtils.getEventDateAndTime(date: event.endTime)
+        eventAddressTextView.text               = event.address
         
         // Enable "Edit" and "Delete" buttons in the navigation bar if user has event editing rights
         if viewingMode == .Edit {
@@ -141,6 +171,7 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         getEventParticipants()
+        getOwnerDisplayableName()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -155,7 +186,11 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
         var cell = tableView.dequeueReusableCell(withIdentifier: "eventOwnerCell")!
 
         if indexPath.row == 0 {
-            (cell as! EventOwnerCell).eventOwnerNameLabel.text = event.owner
+            var ownerDisplayName = self.ownerDisplayableName
+            if ownerDisplayName.isEmpty {
+                ownerDisplayName = event.owner
+            }
+            (cell as! EventOwnerCell).eventOwnerNameLabel.text = ownerDisplayName
         } else {
             cell = tableView.dequeueReusableCell(withIdentifier: "eventParticipantCell")!
             (cell as! EventParticipantCell).eventParticipantNameLabel.text = participantsList[indexPath.row - 1].displayedName
@@ -221,6 +256,38 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
             vc.eventViewerPreservedViewingMode = self.viewingMode
             vc.exitSegueIdentifier = Segues.ReturnToEventViewerFromUserProfile
         }
+    }
+    
+    func createLocationManager() {
+        // Creates a new location manager instance if location services are enabled on the device
+        if (CLLocationManager.locationServicesEnabled())
+        {
+            locationManager = CLLocationManager()
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.requestAlwaysAuthorization()
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    func setMapZoomLevel() {
+        // Sets the focus point of the map
+        let mapCoordinates = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude), latitudinalMeters: CLLocationDistance(kMapZoomLevel), longitudinalMeters: CLLocationDistance(kMapZoomLevel))
+        mapView.setRegion(mapCoordinates, animated: true)
+    }
+    
+    func createEventLocationAnnotation() {
+        // Loops through all the fetched events and creates an annotation on the map
+        let annotation = MKPointAnnotation()
+        annotation.title = event.title
+        annotation.subtitle = "By \(event.owner)"
+        annotation.coordinate = CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)
+        mapView.addAnnotation(annotation)
+    }
+    
+    func removeAllAnnotations() {
+        // Clears the map of all existing annotations
+        mapView.removeAnnotations(mapView.annotations)
     }
     
     @IBAction func ReturnNavigationBarButton_OnClick(_ sender: UIBarButtonItem) {

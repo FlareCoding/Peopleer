@@ -988,14 +988,14 @@
             <objects>
                 <viewController id="aGL-zh-pB9" customClass="EventViewerViewController" customModule="PeopleerClient" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RdA-iS-jsi">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="1200"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="1280"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B6W-TK-GMI">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="1200"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="1280"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0p0-N7-zjh">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1200"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1280"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x8r-Em-MKR">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="368"/>
@@ -1243,16 +1243,33 @@
                                                 <fontDescription key="fontDescription" name="GillSans-BoldItalic" family="Gill Sans" pointSize="18"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Event Address" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="CA2-oe-IN6">
+                                                <rect key="frame" x="8" y="987" width="398" height="80"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="80" id="xua-Pu-loB"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                <dataDetectorType key="dataDetectorTypes" address="YES"/>
+                                            </textView>
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="KFk-O5-DOp">
+                                                <rect key="frame" x="0.0" y="1075" width="414" height="205"/>
+                                            </mapView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="wlG-cX-aFD" firstAttribute="top" secondItem="ECD-mG-915" secondAttribute="bottom" id="06k-aI-pRr"/>
-                                            <constraint firstAttribute="bottom" secondItem="x8r-Em-MKR" secondAttribute="bottom" constant="832" id="0aP-Nb-Vm6"/>
+                                            <constraint firstAttribute="bottom" secondItem="x8r-Em-MKR" secondAttribute="bottom" constant="912" id="0aP-Nb-Vm6"/>
                                             <constraint firstItem="ua7-Td-1Kd" firstAttribute="top" secondItem="uGJ-iT-HbP" secondAttribute="bottom" constant="1" id="3Pu-GW-PiP"/>
                                             <constraint firstItem="gg5-fh-g7S" firstAttribute="leading" secondItem="ECD-mG-915" secondAttribute="leading" id="7J7-T9-aPV"/>
+                                            <constraint firstItem="CA2-oe-IN6" firstAttribute="leading" secondItem="11j-EM-qAF" secondAttribute="leading" id="7bQ-kJ-czY"/>
                                             <constraint firstItem="x8r-Em-MKR" firstAttribute="top" secondItem="0p0-N7-zjh" secondAttribute="top" id="Alp-3I-5BU"/>
-                                            <constraint firstAttribute="height" constant="1200" id="ECs-tq-OQW"/>
+                                            <constraint firstItem="KFk-O5-DOp" firstAttribute="top" secondItem="CA2-oe-IN6" secondAttribute="bottom" constant="8" symbolic="YES" id="ApW-hP-vEG"/>
+                                            <constraint firstItem="CA2-oe-IN6" firstAttribute="trailing" secondItem="11j-EM-qAF" secondAttribute="trailing" id="D2U-j5-0Az"/>
+                                            <constraint firstAttribute="height" constant="1280" id="ECs-tq-OQW"/>
                                             <constraint firstItem="x8r-Em-MKR" firstAttribute="leading" secondItem="0p0-N7-zjh" secondAttribute="leading" id="ErO-kt-mzL"/>
+                                            <constraint firstItem="KFk-O5-DOp" firstAttribute="leading" secondItem="ua7-Td-1Kd" secondAttribute="leading" id="GQF-PL-y1O"/>
                                             <constraint firstItem="uGJ-iT-HbP" firstAttribute="top" secondItem="11j-EM-qAF" secondAttribute="bottom" constant="53" id="JCE-zi-9z0"/>
                                             <constraint firstItem="11j-EM-qAF" firstAttribute="leading" secondItem="dHz-kd-vJn" secondAttribute="leading" id="JJq-Jv-qHd"/>
                                             <constraint firstItem="dHz-kd-vJn" firstAttribute="top" secondItem="gg5-fh-g7S" secondAttribute="bottom" constant="8" symbolic="YES" id="Lko-aZ-5ar"/>
@@ -1264,8 +1281,10 @@
                                             <constraint firstItem="won-I3-Nt9" firstAttribute="leading" secondItem="gg5-fh-g7S" secondAttribute="leading" id="a3A-DI-iR9"/>
                                             <constraint firstItem="dHz-kd-vJn" firstAttribute="trailing" secondItem="wlG-cX-aFD" secondAttribute="trailing" id="dFm-tz-GUE"/>
                                             <constraint firstItem="11j-EM-qAF" firstAttribute="top" secondItem="dHz-kd-vJn" secondAttribute="bottom" constant="8" symbolic="YES" id="dG4-vz-389"/>
+                                            <constraint firstItem="CA2-oe-IN6" firstAttribute="top" secondItem="ua7-Td-1Kd" secondAttribute="bottom" constant="1" id="fi6-j2-fos"/>
                                             <constraint firstItem="uGJ-iT-HbP" firstAttribute="trailing" secondItem="won-I3-Nt9" secondAttribute="trailing" id="gaR-gy-zwk"/>
                                             <constraint firstItem="dHz-kd-vJn" firstAttribute="leading" secondItem="wlG-cX-aFD" secondAttribute="leading" id="iAK-af-Rs6"/>
+                                            <constraint firstItem="KFk-O5-DOp" firstAttribute="trailing" secondItem="ua7-Td-1Kd" secondAttribute="trailing" id="nHe-d7-YJV"/>
                                             <constraint firstItem="wlG-cX-aFD" firstAttribute="top" secondItem="x8r-Em-MKR" secondAttribute="bottom" constant="39" id="pbd-D4-HzS"/>
                                             <constraint firstItem="x8r-Em-MKR" firstAttribute="trailing" secondItem="ECD-mG-915" secondAttribute="trailing" id="pw3-mD-1vd"/>
                                             <constraint firstItem="gg5-fh-g7S" firstAttribute="trailing" secondItem="ECD-mG-915" secondAttribute="trailing" id="pwB-aR-EdN"/>
@@ -1275,6 +1294,7 @@
                                             <constraint firstItem="wlG-cX-aFD" firstAttribute="leading" secondItem="0p0-N7-zjh" secondAttribute="leadingMargin" id="ugn-bn-Ob8"/>
                                             <constraint firstItem="won-I3-Nt9" firstAttribute="trailing" secondItem="gg5-fh-g7S" secondAttribute="trailing" id="vDz-Ds-tO5"/>
                                             <constraint firstItem="x8r-Em-MKR" firstAttribute="leading" secondItem="ECD-mG-915" secondAttribute="leading" id="vr3-zg-hUy"/>
+                                            <constraint firstAttribute="bottom" secondItem="KFk-O5-DOp" secondAttribute="bottom" id="yen-Q6-Mz0"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -1296,10 +1316,11 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Dx0-9l-ZkW"/>
                     </view>
-                    <size key="freeformSize" width="414" height="1200"/>
+                    <size key="freeformSize" width="414" height="1280"/>
                     <connections>
                         <outlet property="deleteEventNavigationBarButton" destination="Ks0-15-bp0" id="Ky2-9b-5BV"/>
                         <outlet property="editEventNavigationBarButton" destination="GSE-rB-x5j" id="nAT-O5-YTX"/>
+                        <outlet property="eventAddressTextView" destination="CA2-oe-IN6" id="OCf-Wl-Ezl"/>
                         <outlet property="eventDescriptionTextView" destination="wlG-cX-aFD" id="7nz-1V-NFS"/>
                         <outlet property="eventEndTimeTextView" destination="11j-EM-qAF" id="Uqp-Bf-67A"/>
                         <outlet property="eventHeaderBackgroundImageView" destination="kGA-tL-d6y" id="Tw8-hP-2hV"/>
@@ -1308,6 +1329,7 @@
                         <outlet property="eventHeaderParticipantsTextView" destination="BUg-Ug-GZ8" id="Dv2-hX-zYm"/>
                         <outlet property="eventParticipantsTableView" destination="uGJ-iT-HbP" id="laP-M9-t44"/>
                         <outlet property="eventStartTimeTextView" destination="dHz-kd-vJn" id="w3q-tr-zQ2"/>
+                        <outlet property="mapView" destination="KFk-O5-DOp" id="Tis-mw-fcU"/>
                         <outlet property="navigationBar" destination="OMZ-W3-0A3" id="KwY-0T-E42"/>
                         <outlet property="scrollView" destination="B6W-TK-GMI" id="yw1-TB-j5r"/>
                         <segue destination="ah5-am-o46" kind="presentation" identifier="returnToMapSegue" modalTransitionStyle="crossDissolve" id="Y82-Kh-WA7"/>
