@@ -55,6 +55,7 @@ class ViewController: UIViewController {
         if segue.identifier == Segues.OpenMyProfile {
             let vc = segue.destination as! UserProfileViewController
             vc.user = LoginManager.userObject
+            vc.exitSegueIdentifier = Segues.OpenMainMenu
         }
     }
 }

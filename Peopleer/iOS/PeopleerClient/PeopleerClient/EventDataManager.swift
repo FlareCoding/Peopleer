@@ -28,6 +28,7 @@ class EventDataManager {
         static let DeleteEvent          = "delete_event"
         static let ModifyEvent          = "modify_event"
         static let JoinEvent            = "join_event"
+        static let LeaveEvent           = "leave_event"
         static let IsUserInEvent        = "is_user_in_event"
         static let GetEventsBasedOnOwner            = "get_events_based_on_owner"
         static let GetEventsBasedOnTitle            = "get_events_based_on_title"
@@ -321,6 +322,43 @@ class EventDataManager {
         }
     }
     
+    func RemoveUserFromEvent(view: UIViewController? = nil, userToRemove: String, event: Event, completionHandler: @escaping (_ succeeded: Bool) -> Void) {
+        
+        let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.LeaveEvent)
+        requestBuilder.addAttrib(name: "lat",   value: event.latitude)
+        requestBuilder.addAttrib(name: "long",  value: event.longitude)
+        requestBuilder.addAttrib(name: "user",  value: userToRemove)
+        
+        NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+            DispatchQueue.main.async {
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [String : String]) in
+                        
+                        if serverResponse["status"] == "error" {
+                            if view != nil {
+                                let err = serverResponse["error"]!
+                                
+                                UIUtils.showAlert(view: view!, title: "Error Leaving Event", message: err)
+                            }
+                            completionHandler(false)
+                            return
+                        }
+                        
+                        completionHandler(true)
+                        return
+                        
+                    }) == true) else {
+                        completionHandler(false)
+                        return
+                    }
+                }
+                
+                completionHandler(false)
+            }
+        }
+    }
+    
     func IsUserSignedUpForEvent(view: UIViewController? = nil, user: String, event: Event, completionHandler: @escaping (_ userSignedUp: Bool) -> Void) {
         
         let requestBuilder = ServerRequestBuilder(servreq: EventServiceRequests.IsUserInEvent)
@@ -331,17 +369,20 @@ class EventDataManager {
         NetworkManager.shared.postRequest(url: EVENTS_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
             DispatchQueue.main.async {
                 if let HTTPResponse = response as? HTTPURLResponse {
+                    var isUserSignedUp = false
+                    
                     guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
                         (serverResponse: [String : String]) in
                         
-                        let isUserSignedUp = Bool(serverResponse["result"] ?? "false") ?? false
-                        completionHandler(isUserSignedUp)
-                        return
+                        isUserSignedUp = Bool(serverResponse["result"] ?? "false") ?? false
                         
                     }) == true) else {
                         completionHandler(false)
                         return
                     }
+                    
+                    completionHandler(isUserSignedUp)
+                    return
                 }
                 
                 completionHandler(false)

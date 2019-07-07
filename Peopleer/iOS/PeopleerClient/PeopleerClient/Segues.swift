@@ -14,6 +14,7 @@ struct Segues {
     static let ReturnToLoginScreen          = "returnToLoginScreenSegue"
     static let Logout                       = "logoutSegue"
     static let OpenMyProfile                = "openMyProfileSegue"
+    static let ViewUserProfile              = "viewUserProfile"
     static let OpenMainMenu                 = "openMainMenuSegue"
     
     // Map segues
@@ -28,4 +29,5 @@ struct Segues {
     static let EditEvent                    = "editEventSegue"
     static let SaveEventChanges             = "saveEventChangesSegue"
     static let CancelEventChanges           = "cancelEventChangesSegue"
+    static let ReturnToEventViewerFromUserProfile = "returnToEventViewerFromUserProfileSegue"
 }

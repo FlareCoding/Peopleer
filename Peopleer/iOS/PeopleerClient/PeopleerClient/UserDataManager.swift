@@ -14,7 +14,8 @@ class UserDataManager {
     static let shared = UserDataManager()
     
     private struct UserServiceRequests {
-        static let GetUserInfo = "get_user_info"
+        static let GetUserInfo          = "get_user_info"
+        static let GetEventParticipants = "get_event_participants"
     }
     
     private func ParseUserData(data: [String : Any]) -> User {
@@ -62,6 +63,38 @@ class UserDataManager {
                 }
                 
                 completionHandler(nil)
+            }
+        }
+    }
+    
+    func GetEventParticipants(view: UIViewController? = nil, event: Event, completionHandler: @escaping (_ users: [User]) -> Void) {
+        let requestBuilder = ServerRequestBuilder(servreq: UserServiceRequests.GetEventParticipants)
+        requestBuilder.addAttrib(name: "lat",  value: event.latitude)
+        requestBuilder.addAttrib(name: "long", value: event.longitude)
+        
+        NetworkManager.shared.postRequest(url: USER_SERVICE_URL, postMsg: requestBuilder.getPostRequest()) { data, response, error in
+            DispatchQueue.main.async {
+                var users: [User] = []
+                
+                if let HTTPResponse = response as? HTTPURLResponse {
+                    
+                    guard (NetworkManager.shared.CheckReceivedServerData(httpResponse: HTTPResponse, data: data, view: view, completion: {
+                        (serverResponse: [[String : String]]) in
+                        
+                        for user in serverResponse {
+                            users.append(self.ParseUserData(data: user))
+                        }
+                        
+                    }) == true) else {
+                        completionHandler(users)
+                        return
+                    }
+                    
+                    completionHandler(users)
+                    return
+                }
+                
+                completionHandler(users)
             }
         }
     }

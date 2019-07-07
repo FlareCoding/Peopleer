@@ -57,6 +57,15 @@ class LaunchScreenController : UIViewController {
                                     })
                                 }
                             }
+                            else {
+                                // For any other reason
+                                UIUtils.showAlert(view: self, title: "Account Error", message: "Failed to retrieve user account information") {
+                                    let vc = sb.instantiateViewController(withIdentifier: "LoginScreenViewController") as! LoginScreenViewController
+                                    UIView.transition(with: UIApplication.shared.keyWindow!, duration: self.windowViewTransitionDuration, options: .transitionCrossDissolve, animations: {
+                                        UIApplication.shared.keyWindow?.rootViewController = vc
+                                    })
+                                }
+                            }
                         }
                     }
                     else {

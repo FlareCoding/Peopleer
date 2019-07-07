@@ -17,6 +17,9 @@ class UserProfileViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var followButton: UIButton!
     @IBOutlet weak var userTableViewContentTypeSegmentedControl: UISegmentedControl!
     
+    // Specifies which segue to use when exiting the view controller
+    var exitSegueIdentifier = ""
+    
     let kSegmentedControlHeight: CGFloat = 38
     
     private enum UserProfilePageTableViewContentCellType {
@@ -31,9 +34,13 @@ class UserProfileViewController: UIViewController, UITableViewDelegate, UITableV
     private var tableViewContentType = UserProfilePageTableViewContentCellType.generalInformationCell
     
     var user = User()
-    var userEvents: [Event] = []
+    private var userEvents: [Event] = []
     
-    var selectedEvent = Event()
+    // Holds event object selected from table view
+    private var selectedEvent = Event()
+    
+    var eventViewerPreservedEvent = Event()
+    var eventViewerPreservedViewingMode = EventViewerViewControllerViewingMode.View
     
 //==============================================================================//
 //==============================================================================//
@@ -137,6 +144,10 @@ class UserProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    @IBAction func ReturnNavigationBarButton_OnClick(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: self.exitSegueIdentifier, sender: nil)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == Segues.ViewEvent {
             let vc = segue.destination as! EventViewerViewController
@@ -152,10 +163,23 @@ class UserProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
             // Pass the preserved current identifier for the exit segue
-            vc.exitSegueIdentifier = Segues.ReturnToUserProfile
+            if self.exitSegueIdentifier == Segues.ReturnToEventViewerFromUserProfile {
+                // this workaround avoids the bug of getting stuck in the inifinite cycle of switching between these two view controllers
+                vc.exitSegueIdentifier = Segues.ReturnToMapFromEventViewer
+            } else {
+                vc.exitSegueIdentifier = Segues.ReturnToUserProfile
+            }
             
             // Pass the user object to be preserved and passed back when returned back to this view controller
             vc.preservedUserObject = self.user
+        }
+        
+        if segue.identifier == Segues.ReturnToEventViewerFromUserProfile {
+            let vc = segue.destination as! EventViewerViewController
+            
+            vc.event = eventViewerPreservedEvent
+            vc.exitSegueIdentifier = Segues.ReturnToMapFromEventViewer // yes this was intended, please don't change
+            vc.viewingMode = eventViewerPreservedViewingMode
         }
     }
 }

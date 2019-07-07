@@ -44,4 +44,21 @@ class UIUtils {
         return topVC!
     }
     
+    static func addCoverLayer(view: UIView, layerColor: UIColor, layerOpacity: Float) {
+        let coverLayer = CALayer()
+        coverLayer.frame = view.bounds;
+        coverLayer.backgroundColor = layerColor.cgColor
+        view.layer.addSublayer(coverLayer)
+        coverLayer.opacity = layerOpacity
+    }
+    
+    static func springAnimate(view: UIView, duration: CGFloat, springScaleFactor: CGFloat) {
+        UIView.animate(withDuration: TimeInterval(duration / 2.0), delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 0.5, options: .curveEaseIn, animations: {
+            view.transform = CGAffineTransform(scaleX: springScaleFactor, y: springScaleFactor)
+        }) { (_) in
+            UIView.animate(withDuration: TimeInterval(duration / 2.0), delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 2, options: .curveEaseIn, animations: {
+                view.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }, completion: nil)
+        }
+    }
 }

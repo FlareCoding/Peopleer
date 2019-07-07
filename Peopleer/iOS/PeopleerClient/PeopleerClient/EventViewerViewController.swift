@@ -1,8 +1,8 @@
 //
-//  EventViewerViewController.swift
+//  EventViewerViewController3.swift
 //  PeopleerClient
 //
-//  Created by Albert Slepak on 5/26/19.
+//  Created by Albert Slepak on 7/5/19.
 //  Copyright © 2019 Albert Slepak. All rights reserved.
 //
 
@@ -15,7 +15,23 @@ enum EventViewerViewControllerViewingMode {
     case View
 }
 
-class EventViewerViewController: UIViewController {
+class EventViewerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var eventParticipantsTableView: UITableView!
+    
+    @IBOutlet weak var navigationBar: UINavigationBar!
+    @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
+    @IBOutlet weak var deleteEventNavigationBarButton: UIBarButtonItem!
+    
+    @IBOutlet weak var eventHeaderBackgroundImageView: UIImageView!
+    @IBOutlet weak var eventHeaderEventTitle: UITextView!
+    @IBOutlet weak var eventHeaderParticipantsTextView: UITextView!
+    @IBOutlet weak var eventHeaderJoinButton: UIButton!
+    
+    @IBOutlet weak var eventDescriptionTextView: UITextView!
+    @IBOutlet weak var eventStartTimeTextView: UITextView!
+    @IBOutlet weak var eventEndTimeTextView: UITextView!
     
     // Event object to hold current event data
     var event = Event()
@@ -29,75 +45,136 @@ class EventViewerViewController: UIViewController {
     // Preserves a user object if the segue to this view controller was called from a user profile
     var preservedUserObject = User()
     
-    @IBOutlet weak var editEventNavigationBarButton: UIBarButtonItem!
-    @IBOutlet weak var deleteEventNavigationBarButton: UIBarButtonItem!
-    @IBOutlet weak var eventTitleLabel: UITextView!
-    @IBOutlet weak var addressLabel: UITextView!
-    @IBOutlet weak var eventDescriptionView: UITextView!
-    @IBOutlet weak var startTimeView: UITextView!
-    @IBOutlet weak var endTimeView: UITextView!
-    @IBOutlet weak var currentParticipantCountView: UITextView!
-    @IBOutlet weak var participantLimitCountView: UITextView!
-    @IBOutlet weak var joinEventButton: UIButton!
-    @IBOutlet weak var signedUpCheckmarkImage: UIImageView!
-    @IBOutlet weak var signedUpDisplayLabel: UILabel!
+    // Holds event participants' user objects
+    private var participantsList: [User] = []
+    
+    // Holds user object that was selected in a table view
+    private var selectedUser = User()
+    
+    //****************** Constants ******************//
+    let kStartTimeLabelStartingText = "Start Time:       "
+    let kEndTimeLabelStartingText   = "End Time:         "
+    let kParticipantsTableViewRowHeight: CGFloat = 44.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.onViewDidLoad();
+        onViewDidLoad()
+    }
+    
+    func getEventParticipants() {
+        UserDataManager.shared.GetEventParticipants(view: self, event: event, completionHandler: { (users) in
+            self.participantsList = users
+            self.eventParticipantsTableView.reloadData()
+        })
     }
     
     func onViewDidLoad() {
+        
+        // Remove all already-existing sublayers from image view
+        eventHeaderBackgroundImageView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        
+        // Make background image darker by adding black opaque sublayer to the image view
+        UIUtils.addCoverLayer(view: eventHeaderBackgroundImageView!, layerColor: .black, layerOpacity: 0.56)
+        
+        // Make the navigation bar transparent
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        
+        // Add a footer view to the participants table view
+        eventParticipantsTableView.tableFooterView = UIView()
+        
         //
         // By default controls will be set only for viewing the event
         //
         
+        // Hide the join button before checking whether user is already signed up or not
+        eventHeaderJoinButton.isHidden = true
+        
         // Disable and hide "Edit" button
         editEventNavigationBarButton.isEnabled = false
-        editEventNavigationBarButton.title = ""
+        editEventNavigationBarButton.tintColor = .clear
         
         // Disable and hide "Delete" button
         deleteEventNavigationBarButton.isEnabled = false
-        deleteEventNavigationBarButton.title = ""
+        deleteEventNavigationBarButton.tintColor = .clear
         
         // Show "Join Event" button only if viewing mode is "View" and if there is space for another participant
-        
         if viewingMode == .View && (event.currentParticipants < event.maxParticipants) && (LoginManager.username != event.owner)  {
-            joinEventButton.isHidden = false
-        } else { joinEventButton.isHidden = true }
+            eventHeaderJoinButton.isHidden = false
+        } else { eventHeaderJoinButton.isHidden = true }
         
         // Check if user is already signed up for this event
-        EventDataManager.shared.IsUserSignedUpForEvent(view: self, user: LoginManager.username, event: self.event) { userSignedUp in
-            if userSignedUp {
-                self.joinEventButton.isHidden = true
-                self.signedUpCheckmarkImage.isHidden = false
-                self.signedUpDisplayLabel.isHidden = false
+        if viewingMode == .View {
+            EventDataManager.shared.IsUserSignedUpForEvent(view: self, user: LoginManager.username, event: self.event) { userSignedUp in
+                if userSignedUp {
+                    self.eventHeaderJoinButton.backgroundColor = UIColor(red: 140 / 255, green: 4 / 255, blue: 4 / 255, alpha: 1.0)
+                    self.eventHeaderJoinButton.setTitle("Leave Event", for: .normal)
+                } else {
+                    self.eventHeaderJoinButton.backgroundColor = UIColor(red: 33 / 255, green: 178 / 255, blue: 54 / 255, alpha: 1.0)
+                    self.eventHeaderJoinButton.setTitle("Join Event", for: .normal)
+                }
+                
+                self.eventHeaderJoinButton.isHidden = false
             }
         }
         
         // Update UI controls based on the new event data
-        eventTitleLabel.text                = event.title
-        addressLabel.text                   = "Located at:\n" + event.address
-        eventDescriptionView.text           = event.description
-        startTimeView.text                  = "Start Time: " + DateTimeUtils.getEventDateAndTime(date: event.startTime)
-        endTimeView.text                    = "End Time: " + DateTimeUtils.getEventDateAndTime(date: event.endTime)
-        currentParticipantCountView.text    = "Current Participants: " + String(describing: event.currentParticipants)
-        participantLimitCountView.text      = "Participant Limit: " + String(describing: event.maxParticipants)
+        eventHeaderEventTitle.text = event.title
+        eventHeaderParticipantsTextView.text    = "Participants:   \(event.currentParticipants)/\(event.maxParticipants)"
+        eventDescriptionTextView.text           = event.description
+        eventStartTimeTextView.text             = kStartTimeLabelStartingText + DateTimeUtils.getEventDateAndTime(date: event.startTime)
+        eventEndTimeTextView.text               = kEndTimeLabelStartingText   + DateTimeUtils.getEventDateAndTime(date: event.endTime)
         
-        // Enable "Edit", "Update", and "Delete" buttons in the navigation bar if user has event editing rights
+        // Enable "Edit" and "Delete" buttons in the navigation bar if user has event editing rights
         if viewingMode == .Edit {
-            editEventNavigationBarButton.title = "Edit"
+            editEventNavigationBarButton.tintColor = .white
             editEventNavigationBarButton.isEnabled = true
             
-            deleteEventNavigationBarButton.title = "Delete"
+            deleteEventNavigationBarButton.tintColor = .red
             deleteEventNavigationBarButton.isEnabled = true
         }
         
         // Enable "Edit" and "Create" buttons in the navigation bar if user is creating a new event
         if viewingMode == .Create {
-            editEventNavigationBarButton.title = "Edit"
+            editEventNavigationBarButton.tintColor = .white
             editEventNavigationBarButton.isEnabled = true
+        }
+        
+        getEventParticipants()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return kParticipantsTableViewRowHeight
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return participantsList.count + 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = tableView.dequeueReusableCell(withIdentifier: "eventOwnerCell")!
+
+        if indexPath.row == 0 {
+            (cell as! EventOwnerCell).eventOwnerNameLabel.text = event.owner
+        } else {
+            cell = tableView.dequeueReusableCell(withIdentifier: "eventParticipantCell")!
+            (cell as! EventParticipantCell).eventParticipantNameLabel.text = participantsList[indexPath.row - 1].displayedName
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var username = event.owner
+        if indexPath.row > 0 {
+            username = participantsList[indexPath.row - 1].username
+        }
+        
+        UserDataManager.shared.GetUserInformation(view: self, username: username) { (user) in
+            if user != nil {
+                self.selectedUser = user!
+                self.performSegue(withIdentifier: Segues.ViewUserProfile, sender: nil)
+            }
         }
     }
     
@@ -114,6 +191,9 @@ class EventViewerViewController: UIViewController {
             
             // Preserve a copy of current identifier for the exit segue
             vc.eventViewerExitSegueIndetifierCopy = self.exitSegueIdentifier
+            
+            // Preserve a copy of user object
+            vc.preservedUserObject = self.preservedUserObject
         }
         
         // If the user returns to the map
@@ -131,6 +211,16 @@ class EventViewerViewController: UIViewController {
             // Set user object of the profile to the preserved copy passed here beforehand
             vc.user = preservedUserObject
         }
+        
+        // If the user views profile from the list of participants in the table view
+        if segue.identifier == Segues.ViewUserProfile {
+            let vc = segue.destination as! UserProfileViewController
+            
+            vc.user = selectedUser
+            vc.eventViewerPreservedEvent = self.event
+            vc.eventViewerPreservedViewingMode = self.viewingMode
+            vc.exitSegueIdentifier = Segues.ReturnToEventViewerFromUserProfile
+        }
     }
     
     @IBAction func ReturnNavigationBarButton_OnClick(_ sender: UIBarButtonItem) {
@@ -147,7 +237,13 @@ class EventViewerViewController: UIViewController {
     }
     
     @IBAction func JoinEventButton_OnClick(_ sender: UIButton) {
-        JoinEvent()
+        UIUtils.springAnimate(view: sender, duration: 0.3, springScaleFactor: 0.86)
+        
+        if eventHeaderJoinButton.titleLabel?.text == "Join Event" {
+            JoinEvent()
+        } else {
+            LeaveEvent()
+        }
     }
     
     private func DeleteEvent() {
@@ -164,6 +260,7 @@ class EventViewerViewController: UIViewController {
     private func JoinEvent() {
         // Signs the user up for a selected event
         EventDataManager.shared.SignUserUpForEvent(view: self, userToSignUp: LoginManager.username, event: self.event) { succeeded in
+            /*
             if succeeded {
                 UIUtils.showAlert(view: self, title: "Success", message: "Successfully joined \"\(self.event.title)\"") {
                     self.ReloadViewWithUpdatedEventInfo()
@@ -171,6 +268,24 @@ class EventViewerViewController: UIViewController {
             } else {
                 self.ReloadViewWithUpdatedEventInfo()
             }
+            */
+            self.ReloadViewWithUpdatedEventInfo()
+        }
+    }
+    
+    private func LeaveEvent() {
+        // Removes the user from event
+        EventDataManager.shared.RemoveUserFromEvent(view: self, userToRemove: LoginManager.username, event: self.event) { succeeded in
+            /*
+            if succeeded {
+                UIUtils.showAlert(view: self, title: "Success", message: "Successfully left event \"\(self.event.title)\"") {
+                    self.ReloadViewWithUpdatedEventInfo()
+                }
+            } else {
+                self.ReloadViewWithUpdatedEventInfo()
+            }
+            */
+            self.ReloadViewWithUpdatedEventInfo()
         }
     }
     
@@ -179,5 +294,55 @@ class EventViewerViewController: UIViewController {
             self.event = updatedEvent ?? Event()
             self.onViewDidLoad()
         }
+    }
+}
+
+class EventOwnerCell : UITableViewCell {
+    
+    @IBOutlet weak var eventOwnerNameLabel: UILabel!
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        initializeCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        initializeCell()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+    
+    func initializeCell() {
+        // Customize cell
+    }
+}
+
+class EventParticipantCell : UITableViewCell {
+    
+    @IBOutlet weak var eventParticipantNameLabel: UILabel!
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        initializeCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        initializeCell()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+    
+    func initializeCell() {
+        // Customize cell
     }
 }

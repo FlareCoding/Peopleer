@@ -22,6 +22,9 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     // Preserved copy of viewing mode from EventViewerViewController that specifies which segue to use when exiting the view controller
     var eventViewerExitSegueIndetifierCopy = ""
     
+    // Preserves a user object if the segue to this view controller was called from a user profile
+    var preservedUserObject = User()
+    
     // Data provided to the table view.
     //
     // Data in the first component shows the cell type, "Input" means that the cell should have an input textfield,
@@ -269,6 +272,9 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         
         // Pass the preserved current identifier for the exit segue
         vc.exitSegueIdentifier = self.eventViewerExitSegueIndetifierCopy
+        
+        // Pass the preserved copy of the user
+        vc.preservedUserObject = self.preservedUserObject
         
         // If the user clicks "Save" button, then pass newly customized event object.
         // If the user clicks "Cancel" button, then pass the initial, unchanged copy of event.
