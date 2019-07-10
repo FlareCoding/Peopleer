@@ -88,6 +88,10 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func getOwnerDisplayableName() {
+        if viewingMode == .Create || viewingMode == .Edit {
+            event.owner = LoginManager.username
+        }
+        
         UserDataManager.shared.GetUserInformation(view: self, username: event.owner) { (user) in
             if user != nil {
                 self.ownerDisplayableName = user!.displayedName
@@ -170,7 +174,10 @@ class EventViewerViewController: UIViewController, UITableViewDelegate, UITableV
             editEventNavigationBarButton.isEnabled = true
         }
         
-        getEventParticipants()
+        if viewingMode != .Create {
+            getEventParticipants()
+        }
+        
         getOwnerDisplayableName()
     }
     

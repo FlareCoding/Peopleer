@@ -30,13 +30,13 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     // Data in the first component shows the cell type, "Input" means that the cell should have an input textfield,
     // and "TimeLabel" represents a cell that shows selected data and time.
     var fields = [
-        ["Input", "Title"],
-        ["Input", "Address"],
-        ["Input", "Description"],
-        ["TimeLabel", "Start Time"],
-        ["TimeLabel", "End Time"],
-        ["Input", "Attendee Limit"],
-        ["Input", "Contact Email"]
+        ["Input", "Title", ""],
+        ["Input", "Address", ""],
+        ["Input", "Description", ""],
+        ["TimeLabel", "Start Time", ""],
+        ["TimeLabel", "End Time", ""],
+        ["Input", "Attendee Limit", ""],
+        ["Input", "Contact Email", ""]
     ]
     
     // Flag to show whether or not date picker cell is visible
@@ -52,10 +52,10 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
     let normalEndTimeDatePickerRow = 4
     
     // Holds event start time
-    var eventStartTime = Date()
+    private var eventStartTime = Date()
     
     // Holds event end time
-    var eventEndTime = Date()
+    private var eventEndTime = Date()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +81,7 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.cellForRow(at: IndexPath(row: normalStartTimeDatePickerRow, section: 0))
         
         // Set the text of the time label to DatePicker's selected date value
-        (cell as! EventEditorTimeBasedSettingsCell).timeLabel.text = DateTimeUtils.getEventDateAndTime(date: sender.date)
+        (cell as? EventEditorTimeBasedSettingsCell)?.timeLabel.text = DateTimeUtils.getEventDateAndTime(date: sender.date)
         
         // Update global state of event start time
         eventStartTime = sender.date
@@ -101,10 +101,26 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.cellForRow(at: endTimeIndexPath)
         
         // Set the text of the time label to DatePicker's selected date value
-        (cell as! EventEditorTimeBasedSettingsCell).timeLabel.text = DateTimeUtils.getEventDateAndTime(date: sender.date)
+        (cell as? EventEditorTimeBasedSettingsCell)?.timeLabel.text = DateTimeUtils.getEventDateAndTime(date: sender.date)
         
         // Update global state of event end time
         eventEndTime = sender.date
+    }
+    
+    @objc func EventTitleInputTextfield_TextChanged(_ sender: UITextField) {
+        fields[0][2] = sender.text ?? "Title"
+    }
+    
+    @objc func EventAddressInputTextfield_TextChanged(_ sender: UITextField) {
+        fields[1][2] = sender.text ?? "Empty"
+    }
+    
+    @objc func EventDescriptionInputTextfield_TextChanged(_ sender: UITextField) {
+        fields[2][2] = sender.text ?? "Empty"
+    }
+    
+    @objc func EventAttendeeLimitInputTextfield_TextChanged(_ sender: UITextField) {
+        fields[fields.count - 2][2] = sender.text ?? "0"
     }
     
     func rowContainsDatePicker(indexPath: IndexPath) -> Bool {
@@ -153,14 +169,42 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
             // If the event is already created, set input textfield's text to the event's options.
             // Otherwise don't set the textfield's placeholder instead of the actual text.
             if viewingMode == .Create {
-                (cell as! EventEditorTextBasedSettingsCell).inputTextfield.placeholder = getEventDataAsTextForCellRow(row: indexPath.row, event: event)
+                if fields[indexPath.row][2].isEmpty {
+                    (cell as! EventEditorTextBasedSettingsCell).inputTextfield.placeholder = getEventDataAsTextForCellRow(row: indexPath.row, event: event)
+                } else {
+                    (cell as! EventEditorTextBasedSettingsCell).inputTextfield.text = fields[indexPath.row][2]
+                }
             } else {
-                (cell as! EventEditorTextBasedSettingsCell).inputTextfield.text = getEventDataAsTextForCellRow(row: indexPath.row, event: event)
+                if fields[indexPath.row][2].isEmpty {
+                    (cell as! EventEditorTextBasedSettingsCell).inputTextfield.text = getEventDataAsTextForCellRow(row: indexPath.row, event: event)
+                } else {
+                    (cell as! EventEditorTextBasedSettingsCell).inputTextfield.text = fields[indexPath.row][2]
+                }
             }
             
             // If the row contains information about attendee limit, set keyboard type to number pad
             if fields[indexPath.row][1] == "Attendee Limit" {
                 (cell as! EventEditorTextBasedSettingsCell).inputTextfield.keyboardType = .numberPad
+            }
+            
+            let textfield = (cell as! EventEditorTextBasedSettingsCell).inputTextfield
+            textfield.removeTarget(nil, action: nil, for: .allEvents) // remove all previously associated actions
+            
+            switch fields[indexPath.row][1] {
+            case "Title":
+                textfield.addTarget(self, action: #selector(EventTitleInputTextfield_TextChanged(_:)), for: .editingChanged)
+                break
+            case "Address":
+                textfield.addTarget(self, action: #selector(EventAddressInputTextfield_TextChanged(_:)), for: .editingChanged)
+                break
+            case "Description":
+                textfield.addTarget(self, action: #selector(EventDescriptionInputTextfield_TextChanged(_:)), for: .editingChanged)
+                break
+            case "Attendee Limit":
+                textfield.addTarget(self, action: #selector(EventAttendeeLimitInputTextfield_TextChanged(_:)), for: .editingChanged)
+                break
+            default:
+                break
             }
         }
         
@@ -299,12 +343,14 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         evt.latitude = self.event.latitude
         evt.longitude = self.event.longitude
         
-        evt.title             = getRowTextfield(row: 0).text ?? "Title"
-        evt.address           = getRowTextfield(row: 1).text ?? "Address"
-        evt.description       = getRowTextfield(row: 2).text ?? "Description"
-        evt.startTime         = eventStartTime
-        evt.endTime           = eventEndTime
-        evt.maxParticipants   = Int(getRowTextfield(row: 5).text ?? "0") ?? 0
+        evt.title             = (fields[0][2].isEmpty ? getEventDataAsTextForCellRow(row: 0, event: self.event) : fields[0][2])
+        evt.address           = (fields[1][2].isEmpty ? getEventDataAsTextForCellRow(row: 1, event: self.event) : fields[1][2])
+        evt.description       = (fields[2][2].isEmpty ? getEventDataAsTextForCellRow(row: 2, event: self.event) : fields[2][2])
+        evt.startTime         = self.eventStartTime
+        evt.endTime           = self.eventEndTime
+        
+        let maxParticipantsIndex = fields.count - 2
+        evt.maxParticipants   = Int((fields[maxParticipantsIndex][2].isEmpty ? getEventDataAsTextForCellRow(row: maxParticipantsIndex, event: self.event) : fields[maxParticipantsIndex][2])) ?? 0
         
         return evt
     }
@@ -322,7 +368,7 @@ class EventEditorViewController: UIViewController, UITableViewDelegate, UITableV
         case 2:
             result = event.description
             break
-        case 5:
+        case fields.count - 2:
             result = String(event.maxParticipants)
             break
         default:
